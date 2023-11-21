@@ -1,6 +1,6 @@
-# 🚀 boost
+# lwjs 🦕
 
-[![npm version](https://badge.fury.io/js/boost.svg)](https://www.npmjs.com/package/boost)
+[![npm version](https://badge.fury.io/js/lwjs.svg)](https://www.npmjs.com/package/lwjs)
 
 Frontend framework
 
