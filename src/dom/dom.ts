@@ -20,7 +20,7 @@ import {
   syncEffect,
 } from "../core";
 
-type DomNode = HTMLElement | Text;
+type DomNode = HTMLElement | SVGElement | Text;
 
 export const createDomNodes = (
   elements: MintElement[],
@@ -63,7 +63,9 @@ export const createDomNodes = (
 };
 
 const htmlElToDom = (el: HtmlElement) => {
-  const dom = document.createElement(el.tag);
+  const dom = el.isSvg
+    ? document.createElementNS("http://www.w3.org/2000/svg", el.tag)
+    : document.createElement(el.tag);
   el.nodes = [dom];
 
   dom.append(...createDomNodes(el.children, el));
@@ -402,7 +404,8 @@ export const render = (node: any, container: HTMLElement) => {
   const containerEl = createHtmlElement(
     container.tagName.toLowerCase(),
     {},
-    els
+    els,
+    false
   );
   containerEl.nodes = [container];
 

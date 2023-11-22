@@ -20,6 +20,7 @@ export type HtmlElement = BaseMintElement & {
   tag: string;
   props: Record<string, any>;
   children: MintElement[];
+  isSvg: boolean;
 };
 
 export type ReactiveElement = BaseMintElement & {

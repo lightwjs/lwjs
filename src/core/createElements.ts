@@ -59,7 +59,8 @@ export const createReactiveElement = (reactive: Signal): ReactiveElement => {
 export const createHtmlElement = (
   tag: string,
   props: Record<string, any>,
-  children: MintElement[]
+  children: MintElement[],
+  isSvg: boolean
 ): HtmlElement => {
   return {
     brand: MINT_EL_SYMBOL,
@@ -67,6 +68,7 @@ export const createHtmlElement = (
     tag,
     props,
     children,
+    isSvg,
   };
 };
 
