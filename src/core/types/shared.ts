@@ -1,11 +1,10 @@
 import * as CSS from "csstype";
-import { MintNode, Signal } from "../../core";
+import { Signal } from "../../core";
 import { MintEventProps } from "./events";
 
 export type CSSProperties = CSS.Properties<string | number>;
 
 export type MintDomProps<T extends HTMLElement | SVGElement> = {
-  node?: MintNode;
   use?: UseFn<T> | UseFn<T>[];
 } & MintEventProps<T>;
 

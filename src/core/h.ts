@@ -1,13 +1,44 @@
 import { SVG_MAP } from "./constants";
 import { createElements, createHtmlElement } from "./createElements";
-import { HTMLElementPropMap, SVGElementPropMap } from "./types";
+import {
+  HTMLElementPropMap,
+  HtmlElement,
+  MintNode,
+  SVGElementPropMap,
+} from "./types";
+import { isPropsObject } from "./utils";
 
-export const h = <Tag extends AllKeys>(tag: Tag, props: AllMap[Tag]) => {
-  const { node, ...rest } = props;
+export type HFn = {
+  <Tag extends AllKeys>(
+    tag: Tag,
+    props: AllMap[Tag],
+    ...nodes: MintNode[]
+  ): HtmlElement;
+  <Tag extends AllKeys>(tag: Tag, ...nodes: MintNode[]): HtmlElement;
+};
+
+export const h: HFn = <Tag extends AllKeys>(
+  tag: Tag,
+  propsOrNode: any,
+  ...nodes: MintNode[]
+) => {
+  let props = {};
+  let nodesToPass: MintNode[] = [];
+
+  if (isPropsObject(propsOrNode)) {
+    props = propsOrNode;
+  }
+  //
+  else {
+    nodesToPass = [propsOrNode];
+  }
+
+  nodesToPass = [...nodesToPass, ...nodes];
+
   return createHtmlElement(
     tag,
-    rest,
-    createElements(node),
+    props,
+    createElements(nodesToPass),
     !!SVG_MAP[tag as keyof SVGElementPropMap]
   );
 };

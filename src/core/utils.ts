@@ -26,6 +26,10 @@ export const isMintElement = (v: any): v is MintElement => {
   return isPlainObject(v) && v.brand === MINT_EL_SYMBOL;
 };
 
+export const isPropsObject = (v: any): v is Record<string, any> => {
+  return isPlainObject(v) && v.brand !== MINT_EL_SYMBOL;
+};
+
 const uppercaseLetterRegX = /[A-Z]/;
 
 export const isEventProp = (propKey: string) =>
