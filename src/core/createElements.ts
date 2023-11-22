@@ -4,6 +4,7 @@ import {
   ComponentElement,
   HtmlElement,
   ListElement,
+  ListElementRenderItemFn,
   MintElement,
   MintNode,
   ReactiveElement,
@@ -86,7 +87,7 @@ export const show = (
 
 export const list = <Item>(
   arr: Signal<Item[]>,
-  renderItem: (item: Item, index: Signal<number>) => MintNode
+  renderItem: ListElementRenderItemFn<Item>
 ): ListElement<Item> => {
   return {
     brand: MINT_EL_SYMBOL,
@@ -114,14 +115,6 @@ export const createComponentElement = <P>(
 };
 
 export const cmp =
-  <P = {}>(render: (props: P) => MintNode) =>
-  (props: P): ComponentElement<P> => {
-    return {
-      brand: MINT_EL_SYMBOL,
-      type: TYPE_MAP.cmp,
-      props,
-      children: [],
-      render,
-      effects: [],
-    };
-  };
+  <P = void>(render: (props: P) => MintNode) =>
+  (props: P) =>
+    createComponentElement(render, props);

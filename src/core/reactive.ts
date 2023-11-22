@@ -37,7 +37,7 @@ export const effect = (compute: EffectParam) => {
   cmp.effects.push(eff);
 };
 
-export const instantEffect: typeof preactEffect = (compute) => {
+export const syncEffect: typeof preactEffect = (compute) => {
   return preactEffect(compute);
 };
 

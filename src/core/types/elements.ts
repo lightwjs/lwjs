@@ -38,11 +38,18 @@ export type ShowElement = BaseMintElement & {
 export type ListElement<Item> = BaseMintElement & {
   type: typeof TYPE_MAP.list;
   rct: Signal<Item[]>;
-  renderItem: (item: Item, index: Signal) => MintNode;
+  renderItem: ListElementRenderItemFn<Item>;
   children: MintElement[];
   prevArr: Item[];
-  cache: Map<Item, ListCacheItem>;
+  cache: ListElementCache<Item>;
 };
+
+export type ListElementRenderItemFn<Item> = (
+  item: Item,
+  index: ReadonlySignal
+) => MintNode;
+
+export type ListElementCache<Item> = Map<Item, ListCacheItem>;
 
 export type ListCacheItem = {
   els: MintElement[];

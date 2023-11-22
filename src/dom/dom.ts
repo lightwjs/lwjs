@@ -3,6 +3,7 @@ import {
   HtmlElement,
   ListCacheItem,
   ListElement,
+  ListElementCache,
   MintElement,
   ProviderElement,
   ReactiveElement,
@@ -13,10 +14,10 @@ import {
   createHtmlElement,
   currentCmp,
   getEventTypeFromPropKey,
-  instantEffect,
   isEventProp,
   isSignal,
   signal,
+  syncEffect,
 } from "../core";
 
 type DomNode = HTMLElement | Text;
@@ -78,7 +79,7 @@ const htmlElToDom = (el: HtmlElement) => {
     //
     else {
       if (isSignal(value)) {
-        instantEffect(() => {
+        syncEffect(() => {
           setAttributeOrProp(el, key, value.value);
         });
       }
@@ -143,7 +144,7 @@ const textElToDom = (el: TextElement) => {
 const reactiveElToDom = (el: ReactiveElement) => {
   const node = new Text(el.rct.value);
 
-  instantEffect(() => {
+  syncEffect(() => {
     node.textContent = el.rct.value;
   });
 
@@ -169,7 +170,7 @@ const removeShowEls = (els: MintElement[]) => {
 const showElToDom = (el: ShowElement) => {
   let prevCond: boolean | undefined;
 
-  instantEffect(() => {
+  syncEffect(() => {
     const cond = !!el.rct.value;
 
     el.children = cond ? el.yes : el.no;
@@ -193,18 +194,21 @@ const showElToDom = (el: ShowElement) => {
   return createDomNodes(el.children, el);
 };
 
-const createListItem = <Item>(item: Item, i: number, el: ListElement<Item>) => {
+const createListItem = <Item>(
+  item: Item,
+  i: number,
+  el: ListElement<Item>
+): ListCacheItem => {
   const index = signal(i);
   const compIndex = computed(() => index.value);
   const els = createElements(el.renderItem(item, compIndex));
   const nodes = createDomNodes(els, el);
-  const cacheItem: ListCacheItem = {
-    els: els,
+  return {
+    els,
     nodes,
     index,
     compIndex,
   };
-  return cacheItem;
 };
 
 const listElToDom = <Item>(el: ListElement<Item>) => {
@@ -220,7 +224,7 @@ const listElToDom = <Item>(el: ListElement<Item>) => {
 
   let didInit = false;
 
-  instantEffect(() => {
+  syncEffect(() => {
     el.rct.value;
     if (!didInit) return;
     const oldArr = el.prevArr;
@@ -238,7 +242,6 @@ const listElToDom = <Item>(el: ListElement<Item>) => {
         const item = newArr[i];
         const cacheItem = createListItem(item, i, el);
         newCache.set(item, cacheItem);
-        el.children.push(...cacheItem.els);
         el.nodes.push(...cacheItem.nodes);
       }
       const parentNode = el.htmlParent?.nodes?.[0];
@@ -255,31 +258,37 @@ const listElToDom = <Item>(el: ListElement<Item>) => {
     }
     // fast path for new empty
     else if (newLen === 0) {
-      if (el.nodes) {
-        for (const node of el.nodes) {
-          node.remove();
-        }
+      for (const node of el.nodes!) {
+        node.remove();
       }
+
       el.cache.clear();
     }
     //
     else {
-      const newCache = new Map();
-      const toBeInserted: any[] = [];
-      const toBeRemoved: ListCacheItem[] = [];
+      const newCache: ListElementCache<Item> = new Map();
+      const toBeInserted: ListInsertSegment[] = [];
+      const toBeRemoved: DomNode[] = [];
+      el.nodes = [];
 
       const addToInsert = (cacheItem: ListCacheItem) => {
         const last = toBeInserted.at(-1);
         const index = cacheItem.index.value;
 
-        if (last?.end === index + 1) {
-          toBeInserted.at(-1).nodes.push(...cacheItem.nodes);
+        const nodes = cacheItem.nodes;
+        el.nodes?.push(...nodes);
+
+        if (last?.last === index - 1) {
+          const insertSeg = toBeInserted.at(-1)!;
+          insertSeg.nodes.push(...nodes);
+          insertSeg.last = index;
         }
         //
         else {
           toBeInserted.push({
-            end: index,
-            nodes: [...cacheItem.nodes],
+            start: index,
+            nodes: [...nodes],
+            last: index,
           });
         }
       };
@@ -294,6 +303,10 @@ const listElToDom = <Item>(el: ListElement<Item>) => {
           if (oldCacheItem.index.value !== i) {
             oldCacheItem.index.value = i;
             addToInsert(oldCacheItem);
+          }
+          //
+          else {
+            el.nodes.push(...oldCacheItem.nodes);
           }
           newCache.set(item, oldCacheItem);
         }
@@ -310,24 +323,23 @@ const listElToDom = <Item>(el: ListElement<Item>) => {
         const cacheItem = newCache.get(item);
         // old item no longer present
         if (!cacheItem) {
-          toBeRemoved.push(cacheItem);
+          const oldCacheItem = el.cache.get(item)!;
+          toBeRemoved.push(...oldCacheItem.nodes);
         }
       }
 
       el.cache = newCache;
 
       // remove
-      for (const cacheItem of toBeRemoved) {
-        for (const node of cacheItem.nodes) {
-          node.remove();
-        }
+      for (const node of toBeRemoved) {
+        node.remove();
       }
 
       // insert
       const parentNode = el.htmlParent?.nodes?.[0];
       for (const obj of toBeInserted) {
         let nextNode = null;
-        const nextEl = el.children[obj.end];
+        const nextEl = el.children[obj.start];
         if (nextEl) {
           nextNode = findNextNode(nextEl);
         }
@@ -341,6 +353,12 @@ const listElToDom = <Item>(el: ListElement<Item>) => {
   didInit = true;
 
   return createDomNodes(el.children, el);
+};
+
+type ListInsertSegment = {
+  start: number;
+  nodes: DomNode[];
+  last: number;
 };
 
 const findNextNode = (el: MintElement): DomNode | undefined => {
