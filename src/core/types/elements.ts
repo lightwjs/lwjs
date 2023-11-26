@@ -1,46 +1,46 @@
-import { MintNode, ReadonlySignal, Signal } from "../../core";
+import { LwNode, ReadonlySignal, Signal } from "../../core";
 import { TYPE_MAP } from "../constants";
 import { Context } from "../context";
 
-type BaseMintElement = {
+type BaseLwElement = {
   brand: Symbol;
-  nextEl?: MintElement;
+  nextEl?: LwElement;
   nodes?: any[];
-  parent?: MintElement;
+  parent?: LwElement;
   htmlParent?: HtmlElement;
 };
 
-export type TextElement = BaseMintElement & {
+export type TextElement = BaseLwElement & {
   type: typeof TYPE_MAP.txt;
   text: string;
 };
 
-export type HtmlElement = BaseMintElement & {
+export type HtmlElement = BaseLwElement & {
   type: typeof TYPE_MAP.html;
   tag: string;
   props: Record<string, any>;
-  children: MintElement[];
+  children: LwElement[];
   isSvg: boolean;
 };
 
-export type ReactiveElement = BaseMintElement & {
+export type ReactiveElement = BaseLwElement & {
   type: typeof TYPE_MAP.rct;
   rct: Signal;
 };
 
-export type ShowElement = BaseMintElement & {
+export type ShowElement = BaseLwElement & {
   type: typeof TYPE_MAP.show;
   rct: Signal;
-  yes: MintElement[];
-  no: MintElement[];
-  children: MintElement[];
+  yes: LwElement[];
+  no: LwElement[];
+  children: LwElement[];
 };
 
-export type ListElement<Item> = BaseMintElement & {
+export type ListElement<Item> = BaseLwElement & {
   type: typeof TYPE_MAP.list;
   rct: Signal<Item[]>;
   renderItem: ListElementRenderItemFn<Item>;
-  children: MintElement[];
+  children: LwElement[];
   prevArr: Item[];
   cache: ListElementCache<Item>;
 };
@@ -48,30 +48,42 @@ export type ListElement<Item> = BaseMintElement & {
 export type ListElementRenderItemFn<Item> = (
   item: Item,
   index: ReadonlySignal
-) => MintNode;
+) => LwNode;
 
 export type ListElementCache<Item> = Map<Item, ListCacheItem>;
 
 export type ListCacheItem = {
-  els: MintElement[];
+  els: LwElement[];
   nodes: any[];
   index: Signal<number>;
   compIndex: ReadonlySignal<number>;
 };
 
-export type ProviderElement<T> = BaseMintElement & {
+export type ProviderElement<T> = BaseLwElement & {
   type: typeof TYPE_MAP.provider;
   ctx: Context<T>;
   value: T;
-  children: MintElement[];
+  children: LwElement[];
 };
 
-export type ComponentElement<P> = BaseMintElement & {
+export type ComponentProps<P> = P & { children: LwElement[] };
+
+export type ComponentRenderFn<P = void> = (
+  props: ComponentProps<P>
+) => LwNode;
+
+export type ComponentElement<P> = BaseLwElement & {
   type: typeof TYPE_MAP.cmp;
-  props: P;
-  render: (props: P) => MintNode;
-  children: MintElement[];
+  props: ComponentProps<P>;
+  render: ComponentRenderFn<P>;
+  children: LwElement[];
   effects: CmpEffect[];
+};
+
+export type HeadElement = BaseLwElement & {
+  type: typeof TYPE_MAP.head;
+  tag: string;
+  props: Record<string, any>;
 };
 
 export type CmpEffect = {
@@ -79,11 +91,12 @@ export type CmpEffect = {
   usrCleanup?: () => void;
 };
 
-export type MintElement =
+export type LwElement =
   | TextElement
   | HtmlElement
   | ReactiveElement
   | ShowElement
   | ListElement<any>
   | ProviderElement<any>
-  | ComponentElement<any>;
+  | ComponentElement<any>
+  | HeadElement;

@@ -1,6 +1,6 @@
-import { MINT_EL_SYMBOL } from "./constants";
+import { LW_EL_SYMBOL } from "./constants";
 import { Signal } from "./reactive";
-import { EmptyNode, MintElement, TextNode } from "./types";
+import { EmptyNode, LwElement, TextNode } from "./types";
 
 export const isTextNode = (v: any): v is TextNode => {
   return typeof v === "string" || typeof v === "number";
@@ -22,15 +22,15 @@ export const isSignal = (v: any): v is Signal => {
   return isObject(v) && v.brand === Symbol.for("preact-signals");
 };
 
-export const isMintElement = (v: any): v is MintElement => {
-  return isPlainObject(v) && v.brand === MINT_EL_SYMBOL;
+export const isLwElement = (v: any): v is LwElement => {
+  return isPlainObject(v) && v.brand === LW_EL_SYMBOL;
 };
 
 export const isPropsObject = (v: any): v is Record<string, any> => {
-  return isPlainObject(v) && v.brand !== MINT_EL_SYMBOL;
+  return isPlainObject(v) && v.brand !== LW_EL_SYMBOL;
 };
 
-const uppercaseLetterRegX = /[A-Z]/;
+export const uppercaseLetterRegX = /[A-Z]/;
 
 export const isEventProp = (propKey: string) =>
   propKey !== "on" &&

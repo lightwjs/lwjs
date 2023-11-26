@@ -3,7 +3,7 @@ import { createElements, createHtmlElement } from "./createElements";
 import {
   HTMLElementPropMap,
   HtmlElement,
-  MintNode,
+  LwNode,
   SVGElementPropMap,
 } from "./types";
 import { isPropsObject } from "./utils";
@@ -12,18 +12,18 @@ export type HFn = {
   <Tag extends AllKeys>(
     tag: Tag,
     props: AllMap[Tag],
-    ...nodes: MintNode[]
+    ...nodes: LwNode[]
   ): HtmlElement;
-  <Tag extends AllKeys>(tag: Tag, ...nodes: MintNode[]): HtmlElement;
+  <Tag extends AllKeys>(tag: Tag, ...nodes: LwNode[]): HtmlElement;
 };
 
 export const h: HFn = <Tag extends AllKeys>(
   tag: Tag,
   propsOrNode: any,
-  ...nodes: MintNode[]
+  ...nodes: LwNode[]
 ) => {
   let props = {};
-  let nodesToPass: MintNode[] = [];
+  let nodesToPass: LwNode[] = [];
 
   if (isPropsObject(propsOrNode)) {
     props = propsOrNode;
@@ -39,7 +39,7 @@ export const h: HFn = <Tag extends AllKeys>(
     tag,
     props,
     createElements(nodesToPass),
-    !!SVG_MAP[tag as keyof SVGElementPropMap]
+    tag in SVG_MAP
   );
 };
 

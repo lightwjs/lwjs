@@ -4,7 +4,7 @@ import {
   ListCacheItem,
   ListElement,
   ListElementCache,
-  MintElement,
+  LwElement,
   ProviderElement,
   ReactiveElement,
   ShowElement,
@@ -23,8 +23,8 @@ import {
 type DomNode = HTMLElement | SVGElement | Text;
 
 export const createDomNodes = (
-  elements: MintElement[],
-  parent: MintElement
+  elements: LwElement[],
+  parent: LwElement
 ): DomNode[] => {
   const domNodes: DomNode[] = [];
 
@@ -153,7 +153,7 @@ const reactiveElToDom = (el: ReactiveElement) => {
   return node;
 };
 
-const removeShowEls = (els: MintElement[]) => {
+const removeShowEls = (els: LwElement[]) => {
   for (const e of els) {
     if (e.type === "cmp") {
       for (const eff of e.effects) {
@@ -270,7 +270,6 @@ const listElToDom = <Item>(el: ListElement<Item>) => {
     else {
       const newCache: ListElementCache<Item> = new Map();
       const toBeInserted: ListInsertSegment[] = [];
-      const toBeRemoved: DomNode[] = [];
       el.nodes = [];
 
       const addToInsert = (cacheItem: ListCacheItem) => {
@@ -320,6 +319,8 @@ const listElToDom = <Item>(el: ListElement<Item>) => {
         }
       }
 
+      const toBeRemoved: DomNode[] = [];
+
       for (let i = 0; i < oldLen; i++) {
         const item = oldArr[i];
         const cacheItem = newCache.get(item);
@@ -363,7 +364,7 @@ type ListInsertSegment = {
   last: number;
 };
 
-const findNextNode = (el: MintElement): DomNode | undefined => {
+const findNextNode = (el: LwElement): DomNode | undefined => {
   let nextEl = el.nextEl;
 
   while (nextEl) {

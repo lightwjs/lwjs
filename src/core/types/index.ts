@@ -1,16 +1,16 @@
 import { Signal } from "../reactive";
-import { MintElement } from "./elements";
+import { LwElement } from "./elements";
 
 export type TextNode = string | number;
 
 export type EmptyNode = boolean | null | undefined;
 
-export type MintNode =
+export type LwNode =
   | TextNode
   | EmptyNode
   | Signal<any>
-  | MintElement
-  | MintNode[];
+  | LwElement
+  | LwNode[];
 
 export * from "./aria";
 export * from "./elements";

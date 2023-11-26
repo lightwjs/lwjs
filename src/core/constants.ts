@@ -8,9 +8,10 @@ export const TYPE_MAP = {
   rct: "rct",
   provider: "provider",
   cmp: "cmp",
+  head: "head",
 } as const;
 
-export const MINT_EL_SYMBOL = Symbol.for("mint-el");
+export const LW_EL_SYMBOL = Symbol.for("lw-el");
 
 export const svgTags: (keyof SVGElementPropMap)[] = [
   "svg",

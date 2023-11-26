@@ -2,8 +2,8 @@ import {
   ComponentElement,
   HtmlElement,
   ListElement,
-  MintElement,
-  MintNode,
+  LwElement,
+  LwNode,
   ProviderElement,
   ReactiveElement,
   ShowElement,
@@ -15,7 +15,7 @@ import {
   isSignal,
 } from "../core";
 
-const createStringFromEls = (elements: MintElement[]): string => {
+const createStringFromEls = (elements: LwElement[]): string => {
   // @ts-ignore
   return elements.map((el) => map[el.type](el)).join("");
 };
@@ -122,7 +122,7 @@ const map = {
   cmp: cmpElToString,
 } as const;
 
-export const ssr = (node: MintNode) => {
+export const ssr = (node: LwNode) => {
   const els = createElements(node);
 
   return createStringFromEls(els);
