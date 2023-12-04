@@ -39,3 +39,5 @@ export const isEventProp = (propKey: string) =>
 
 export const getEventTypeFromPropKey = (propKey: string) =>
   propKey.slice(2).toLowerCase();
+
+export const isFunction = (v: any): v is Function => typeof v === "function";

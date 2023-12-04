@@ -22,9 +22,9 @@ export const createSheet = ({ container, insertionPoint }: Options) => {
     }
     //
     else {
-      nextNode = els.at(-1)!.nextSibling;
+      nextNode = els.at(-1)?.nextSibling;
     }
-    container.insertBefore(el, nextNode);
+    container.insertBefore(el, nextNode ?? null);
     els.push(el);
   };
 

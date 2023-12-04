@@ -68,9 +68,7 @@ export type ProviderElement<T> = BaseLwElement & {
 
 export type ComponentProps<P> = P & { children: LwElement[] };
 
-export type ComponentRenderFn<P = void> = (
-  props: ComponentProps<P>
-) => LwNode;
+export type ComponentRenderFn<P = void> = (props: ComponentProps<P>) => LwNode;
 
 export type ComponentElement<P> = BaseLwElement & {
   type: typeof TYPE_MAP.cmp;

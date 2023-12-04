@@ -14,27 +14,11 @@ import {
   isEventProp,
   isSignal,
 } from "../core";
+import { serializeCss } from "../css";
 
 const createStringFromEls = (elements: LwElement[]): string => {
   // @ts-ignore
   return elements.map((el) => map[el.type](el)).join("");
-};
-
-const styleObjToString = (styleObj: object) => {
-  return Object.entries(styleObj)
-    .map(([key, value]) => {
-      let v = value;
-
-      if (typeof v === "number") {
-        v = `${v}px`;
-      }
-
-      return `${key.replace(
-        /[A-Z]/g,
-        (match) => `-${match.toLowerCase()}`
-      )}:${v}`;
-    })
-    .join(";");
 };
 
 const htmlElToString = (el: HtmlElement) => {
@@ -56,7 +40,7 @@ const htmlElToString = (el: HtmlElement) => {
     }
 
     if (key === "style") {
-      v = styleObjToString(v);
+      v = serializeCss(v);
     }
 
     props.push(`${keyAlias ?? key}="${v}"`);

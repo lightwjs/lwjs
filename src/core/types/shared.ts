@@ -4,8 +4,12 @@ import { DomEventProps } from "./events";
 
 export type CSSProperties = CSS.Properties<string | number>;
 
+export type CSSObject = {
+  [k in keyof CSSProperties]: CSSProperties[k];
+};
+
 export type LwDomProps<T extends HTMLElement | SVGElement> = {
-  use?: UseFn<T> | UseFn<T>[];
+  css?: CSSObject | (() => CSSObject);
 } & DomEventProps<T>;
 
 export type Booleanish = boolean | "true" | "false";

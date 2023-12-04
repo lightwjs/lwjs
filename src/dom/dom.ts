@@ -1,5 +1,6 @@
 import {
   ComponentElement,
+  HeadElement,
   HtmlElement,
   ListCacheItem,
   ListElement,
@@ -15,10 +16,12 @@ import {
   currentCmp,
   getEventTypeFromPropKey,
   isEventProp,
+  isFunction,
   isSignal,
   signal,
   syncEffect,
 } from "../core";
+import { createSheet, hash, serializeCss } from "../css";
 
 type DomNode = HTMLElement | SVGElement | Text;
 
@@ -95,6 +98,44 @@ const htmlElToDom = (el: HtmlElement) => {
   return dom;
 };
 
+const sheet = createSheet({ container: document.head });
+
+const setAttributeOrProp = (el: HtmlElement, key: string, value: any) => {
+  const node = el.nodes?.[0];
+  if (!node) return;
+  if (key === "style") {
+    setStyleAttribute(el, value);
+  }
+  //
+  else if (key === "css") {
+    if (isFunction(value)) {
+      syncEffect(() => {
+        setCssClass(node, value());
+      });
+    }
+    //
+    else {
+      setCssClass(node, value);
+    }
+  }
+  //
+  else if (PROP_MAP[key]) {
+    (node as any)[key] = value;
+  }
+  //
+  else {
+    node.setAttribute(ATTRIBUTE_ALIASES[key] ?? key, value as any);
+  }
+};
+
+const setCssClass = (node: HTMLElement, value: any) => {
+  const css = serializeCss(value);
+  const className = `css-${hash(css)}`;
+
+  sheet.insertRule(`.${className}{${css}}`);
+  node.classList.add(className);
+};
+
 const setStyleAttribute = (el: HtmlElement, styleObj: Record<string, any>) => {
   const node = el.nodes?.[0];
 
@@ -107,22 +148,6 @@ const setStyleAttribute = (el: HtmlElement, styleObj: Record<string, any>) => {
       v = `${v}px`;
     }
     node.style[key] = v;
-  }
-};
-
-const setAttributeOrProp = (el: HtmlElement, key: string, value: any) => {
-  const node = el.nodes?.[0];
-  if (!node) return;
-  if (key === "style") {
-    setStyleAttribute(el, value);
-  }
-  //
-  else if (PROP_MAP[key]) {
-    (node as any)[key] = value;
-  }
-  //
-  else {
-    node.setAttribute(ATTRIBUTE_ALIASES[key] ?? key, value as any);
   }
 };
 
@@ -279,17 +304,16 @@ const listElToDom = <Item>(el: ListElement<Item>) => {
         const nodes = cacheItem.nodes;
         el.nodes?.push(...nodes);
 
-        if (last?.last === index - 1) {
+        if (last?.start === index - 1) {
           const insertSeg = toBeInserted.at(-1)!;
           insertSeg.nodes.push(...nodes);
-          insertSeg.last = index;
+          insertSeg.start = index;
         }
         //
         else {
           toBeInserted.push({
             start: index,
             nodes: [...nodes],
-            last: index,
           });
         }
       };
@@ -361,7 +385,6 @@ const listElToDom = <Item>(el: ListElement<Item>) => {
 type ListInsertSegment = {
   start: number;
   nodes: DomNode[];
-  last: number;
 };
 
 const findNextNode = (el: LwElement): DomNode | undefined => {
@@ -387,16 +410,57 @@ const componentElToDom = <P>(el: ComponentElement<P>) => {
   return createDomNodes(el.children, el);
 };
 
+const providerElToDom = (el: ProviderElement<any>) => {
+  return createDomNodes(el.children, el);
+};
+
+const headElToDom = (el: HeadElement) => {
+  if (el.tag === "title") {
+    if (isSignal(el.props.text)) {
+      syncEffect(() => {
+        document.title = el.props.text.value;
+      });
+    }
+    //
+    else {
+      document.title = el.props.text;
+    }
+  }
+  //
+  else if (el.tag === "meta") {
+    const head = document.head;
+
+    const meta = document.createElement("meta");
+
+    const keys = Object.keys(el.props);
+
+    for (const key of keys) {
+      const value = el.props[key];
+      if (isSignal(value)) {
+        syncEffect(() => {
+          meta.setAttribute(key, value.value);
+        });
+      }
+      //
+      else {
+        meta.setAttribute(key, value);
+      }
+    }
+
+    head.appendChild(meta);
+  }
+  return [];
+};
+
 const elDomMap = {
   html: htmlElToDom,
   txt: textElToDom,
   rct: reactiveElToDom,
   show: showElToDom,
   list: listElToDom,
-  provider: (el: ProviderElement<any>) => {
-    return createDomNodes(el.children, el);
-  },
+  provider: providerElToDom,
   cmp: componentElToDom,
+  head: headElToDom,
 } as const;
 
 export const render = (node: any, container: HTMLElement) => {

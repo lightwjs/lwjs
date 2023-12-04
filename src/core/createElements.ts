@@ -4,6 +4,7 @@ import {
   ComponentElement,
   ComponentProps,
   ComponentRenderFn,
+  HeadElement,
   HtmlElement,
   ListElement,
   ListElementRenderItemFn,
@@ -152,3 +153,15 @@ export const cmp =
 
     return createComponentElement(render, propsToPass);
   };
+
+export const createHeadElement = <Tag>(
+  tag: string,
+  props: Record<string, any>
+): HeadElement => {
+  return {
+    brand: LW_EL_SYMBOL,
+    type: TYPE_MAP.head,
+    tag,
+    props,
+  };
+};
