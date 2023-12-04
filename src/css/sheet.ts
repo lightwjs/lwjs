@@ -1,8 +1,3 @@
-type Options = {
-  container: Node;
-  insertionPoint?: Node;
-};
-
 export const createSheet = ({ container, insertionPoint }: Options) => {
   const useStyleSheet = process.env.NODE_ENV === "production";
   let total = 0;
@@ -53,3 +48,8 @@ export const createSheet = ({ container, insertionPoint }: Options) => {
 };
 
 const MAX_RULES_PER_STYLE_EL = 65000;
+
+type Options = {
+  container: Node;
+  insertionPoint?: Node;
+};
