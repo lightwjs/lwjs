@@ -1,24 +1,24 @@
 import { describe, expect, test, vi } from "vitest";
-import { Effect, effect } from "../effect";
-import { signal } from "../signal";
+import { Effect, syncEffect } from "../Effect";
+import { signal } from "../Signal";
 
 describe("effect", () => {
   test("creation", () => {
-    const e = effect(() => {});
+    const e = syncEffect(() => {});
     expect(e).toBeInstanceOf(Effect);
     expect(e.run).toBeTypeOf("function");
   });
 
   test("runs once on creation", () => {
     const spy = vi.fn(() => {});
-    effect(spy);
+    syncEffect(spy);
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
   test("run called when single dep change", () => {
     const s = signal(0);
     const spy = vi.fn(() => s.value);
-    effect(spy);
+    syncEffect(spy);
     expect(spy).toBeCalledTimes(1);
     spy.mockReset();
 
@@ -34,7 +34,7 @@ describe("effect", () => {
       s1.value;
       s2.value;
     });
-    effect(spy);
+    syncEffect(spy);
     expect(spy).toBeCalledTimes(1);
     spy.mockReset();
 
@@ -52,8 +52,8 @@ describe("effect", () => {
     const spy2 = vi.fn(() => {
       s.value;
     });
-    effect(spy1);
-    effect(spy2);
+    syncEffect(spy1);
+    syncEffect(spy2);
     expect(spy1).toBeCalledTimes(1);
     expect(spy2).toBeCalledTimes(1);
     spy1.mockReset();

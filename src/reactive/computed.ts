@@ -1,3 +1,4 @@
+import { TYPE_MAP } from "../constants";
 import { context } from "./context";
 import { Subs } from "./types";
 
@@ -5,6 +6,7 @@ export class Computed<Value = any> {
   constructor(compute: () => Value) {
     this.compute = compute;
   }
+  type = TYPE_MAP.computed;
   _value!: Value;
   isDirty = true;
   compute;

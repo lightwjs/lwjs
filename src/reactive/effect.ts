@@ -1,25 +1,41 @@
 import { context } from "./context";
 
 export class Effect {
-  constructor(callback: () => any) {
-    this.callback = callback;
-  }
-  callback;
+  constructor(fn: EffectFn, options?: EffectOptions) {
+    this.fn = fn;
+    const timing = options?.timing ?? "sync";
 
-  run() {
-    context.currentSub = this;
-    this.callback();
-  }
+    const run = () => {
+      context.currentSub = this;
+      this.cleanup = this.fn();
+      context.currentSub = null;
+    };
 
-  notify() {
-    this.run();
+    let timedRun;
+
+    if (timing === "afterPaint") {
+      timedRun = () => requestAnimationFrame(run);
+    } else {
+      timedRun = run;
+    }
+
+    this.notify = timedRun;
+
+    timedRun();
   }
+  fn;
+  notify;
+  cleanup: EffectCleanupFn | undefined;
 }
 
-export const effect = (callback: () => any) => {
-  const e = new Effect(callback);
-
-  e.run();
-
-  return e;
+export const syncEffect = (callback: () => any) => {
+  return new Effect(callback);
 };
+
+export type EffectOptions = {
+  timing?: "sync" | "afterPaint";
+};
+
+export type EffectFn = () => any | EffectCleanupFn;
+
+type EffectCleanupFn = () => any;

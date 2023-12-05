@@ -1,3 +1,4 @@
+import { TYPE_MAP } from "../constants";
 import { context } from "./context";
 import { Subs } from "./types";
 
@@ -5,6 +6,7 @@ export class Signal<Value = any> {
   constructor(initialValue: Value) {
     this._value = initialValue;
   }
+  type = TYPE_MAP.signal;
   _value;
   subs: Subs = new Set();
 

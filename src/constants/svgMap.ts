@@ -1,17 +1,4 @@
-import { SVGElementPropMap } from "./types";
-
-export const TYPE_MAP = {
-  txt: "txt",
-  html: "html",
-  show: "show",
-  list: "list",
-  rct: "rct",
-  provider: "provider",
-  cmp: "cmp",
-  head: "head",
-} as const;
-
-export const LW_EL_SYMBOL = Symbol.for("lw-el");
+import { SVGElementPropMap } from "../types";
 
 export const svgTags: (keyof SVGElementPropMap)[] = [
   "svg",

@@ -1,9 +1,9 @@
-import { Computed } from "./computed";
-import { Effect } from "./effect";
-import { Signal } from "./signal";
+import { Computed } from "./Computed";
+import { Effect } from "./Effect";
+import { Signal } from "./Signal";
 
 export type Sub = Computed | Effect;
 
 export type Subs = Set<Sub>;
 
-export type ReactiveValue = Signal | Computed;
+export type ReactiveValue<Value = any> = Signal<Value> | Computed<Value>;

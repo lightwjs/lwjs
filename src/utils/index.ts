@@ -1,6 +1,6 @@
-import { LW_EL_SYMBOL } from "./constants";
-import { Signal } from "./reactive";
-import { EmptyNode, LwElement, TextNode } from "./types";
+import { LW_EL_SYMBOL, TYPE_MAP } from "../constants";
+import { ReactiveValue } from "../reactive";
+import { EmptyNode, LwElement, TextNode } from "../types";
 
 export const isTextNode = (v: any): v is TextNode => {
   return typeof v === "string" || typeof v === "number";
@@ -18,12 +18,14 @@ export const isPlainObject = (v: any): v is Record<string, any> => {
   return isObject(v) && v.constructor === Object;
 };
 
-export const isSignal = (v: any): v is Signal => {
-  return isObject(v) && v.brand === Symbol.for("preact-signals");
+export const isReactiveValue = (v: any): v is ReactiveValue => {
+  return (
+    isObject(v) && (v.type === TYPE_MAP.signal || v.type === TYPE_MAP.computed)
+  );
 };
 
 export const isLwElement = (v: any): v is LwElement => {
-  return isPlainObject(v) && v.brand === LW_EL_SYMBOL;
+  return isObject(v) && v.brand === LW_EL_SYMBOL;
 };
 
 export const isPropsObject = (v: any): v is Record<string, any> => {

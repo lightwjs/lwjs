@@ -1,5 +1,5 @@
 import * as CSS from "csstype";
-import { Signal } from "../../core";
+import { ReactiveValue } from "../reactive";
 import { DomEventProps } from "./events";
 
 export type CSSProperties = CSS.Properties<string | number>;
@@ -21,5 +21,5 @@ export type UseFn<T extends HTMLElement | SVGElement> = (
 ) => (() => void) | void;
 
 export type LwReactiveProps<T> = {
-  [key in keyof T]: T[key] | Signal<T[key]>;
+  [key in keyof T]: T[key] | ReactiveValue<T[key]>;
 };

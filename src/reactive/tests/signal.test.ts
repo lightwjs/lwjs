@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { Signal, signal } from "../signal";
+import { Signal, signal } from "../Signal";
 
 describe("signal", () => {
   test("inherits from Signal", () => {

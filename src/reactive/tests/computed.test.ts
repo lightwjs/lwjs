@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { Computed, computed } from "../computed";
-import { signal } from "../signal";
+import { Computed, computed } from "../Computed";
+import { signal } from "../Signal";
 
 describe("computed", () => {
   test("inherits from Computed", () => {
