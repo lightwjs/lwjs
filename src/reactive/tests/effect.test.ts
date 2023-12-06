@@ -6,7 +6,6 @@ describe("effect", () => {
   test("creation", () => {
     const e = syncEffect(() => {});
     expect(e).toBeInstanceOf(Effect);
-    expect(e.run).toBeTypeOf("function");
   });
 
   test("runs once on creation", () => {
@@ -39,7 +38,7 @@ describe("effect", () => {
     spy.mockReset();
 
     s1.value = 1;
-    s2.value = 2;
+    s2.value = 1;
 
     expect(spy).toBeCalledTimes(2);
   });

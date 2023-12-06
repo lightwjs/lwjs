@@ -1,6 +1,7 @@
 import { LW_EL_SYMBOL, TYPE_MAP } from "../constants";
+import { Effect } from "../reactive";
 import { BaseLwElement, LwElement, LwNode } from "../types";
-import { isPropsObject } from "../utils";
+import { handlePropsArg } from "../utils";
 import { ComponentApi } from "./ComponentApi";
 import { HtmlElement } from "./HtmlElement";
 import { createElements } from "./createElements";
@@ -17,6 +18,7 @@ export class ComponentElement<Props> implements BaseLwElement {
   nodes?: any[];
   parent?: LwElement;
   children: LwElement[] = [];
+  effects: Effect[] = [];
 }
 
 type ComponentFactoryFn<P> = {
@@ -27,21 +29,10 @@ type ComponentFactoryFn<P> = {
 export const component =
   <P = void>(render: ComponentRenderFn<P>): ComponentFactoryFn<P> =>
   (propsOrNode: any, ...nodes: LwNode[]) => {
-    let props = {} as P;
-    let nodesToPass: LwNode[] = [];
-
-    if (isPropsObject(propsOrNode)) {
-      props = propsOrNode as P;
-    }
-    //
-    else {
-      nodesToPass = [propsOrNode];
-    }
-
-    nodesToPass = [...nodesToPass, ...nodes];
+    const { props, nodesToPass } = handlePropsArg(propsOrNode, nodes);
 
     const propsToPass = {
-      ...props,
+      ...(props as P),
       children: createElements(nodesToPass),
     };
 

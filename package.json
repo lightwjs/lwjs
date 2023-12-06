@@ -1,7 +1,7 @@
 {
   "name": "lwjs",
-  "version": "0.0.2",
-  "description": "",
+  "version": "0.0.3",
+  "description": "Frontend framework",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -25,6 +25,7 @@
   },
   "keywords": [
     "frontend",
+    "framework",
     "ui"
   ],
   "author": "Dusan Jovanov",
@@ -35,8 +36,5 @@
     "tsup": "^7.1.0",
     "typescript": "^5.1.6",
     "vitest": "^0.34.6"
-  },
-  "dependencies": {
-    "@preact/signals-core": "^1.5.0"
   }
 }

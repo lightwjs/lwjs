@@ -4,7 +4,7 @@ import { createDomNodes } from "../createDomNodes";
 import { createListItem } from "./createListItem";
 import { patchList } from "./patchList";
 
-export const createList = <Item>(el: ListElement<Item>) => {
+export const createListDom = <Item>(el: ListElement<Item>) => {
   const arr = el.arr.value;
   el.prevArr = arr;
   const len = arr.length;
@@ -17,7 +17,7 @@ export const createList = <Item>(el: ListElement<Item>) => {
 
   let didInit = false;
 
-  syncEffect(() => {
+  const eff = syncEffect(() => {
     el.arr.value;
     if (!didInit) return;
     patchList(el);
@@ -25,5 +25,6 @@ export const createList = <Item>(el: ListElement<Item>) => {
 
   didInit = true;
 
-  return createDomNodes(el.children, el);
+  el.nodes = createDomNodes(el.children, el);
+  el.effects = [eff];
 };

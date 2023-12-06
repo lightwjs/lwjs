@@ -8,7 +8,7 @@ import {
 import { createDomNodes } from "../createDomNodes";
 import { setAttributeOrProp } from "./setAttributeOrProp";
 
-export const createHtmlElement = (el: HtmlElement) => {
+export const createHtmlElementDom = (el: HtmlElement) => {
   const dom = el.isSvg
     ? document.createElementNS("http://www.w3.org/2000/svg", el.tag)
     : document.createElement(el.tag);
@@ -27,13 +27,15 @@ export const createHtmlElement = (el: HtmlElement) => {
     //
     else {
       if (isReactiveValue(value)) {
-        syncEffect(() => {
-          setAttributeOrProp(el, key, value.value);
+        const eff = syncEffect(() => {
+          setAttributeOrProp(dom, key, value.value);
         });
+        if (!el.effects) el.effects = [];
+        el.effects.push(eff);
       }
       //
       else {
-        setAttributeOrProp(el, key, value);
+        setAttributeOrProp(dom, key, value);
       }
     }
   }

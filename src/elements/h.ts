@@ -1,6 +1,6 @@
 import { SVG_MAP } from "../constants";
 import { HTMLElementPropMap, LwNode, SVGElementPropMap } from "../types";
-import { isPropsObject } from "../utils";
+import { handlePropsArg } from "../utils";
 import { HtmlElement } from "./HtmlElement";
 import { createElements } from "./createElements";
 
@@ -18,18 +18,7 @@ export const h: HFn = <Tag extends AllKeys>(
   propsOrNode: any,
   ...nodes: LwNode[]
 ) => {
-  let props = {};
-  let nodesToPass: LwNode[] = [];
-
-  if (isPropsObject(propsOrNode)) {
-    props = propsOrNode;
-  }
-  //
-  else {
-    nodesToPass = [propsOrNode];
-  }
-
-  nodesToPass = [...nodesToPass, ...nodes];
+  const { props, nodesToPass } = handlePropsArg(propsOrNode, nodes);
 
   return new HtmlElement(
     tag,

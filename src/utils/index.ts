@@ -14,10 +14,6 @@ export const isObject = (v: any): v is Record<string, any> => {
   return v != null && typeof v === "object";
 };
 
-export const isPlainObject = (v: any): v is Record<string, any> => {
-  return isObject(v) && v.constructor === Object;
-};
-
 export const isReactiveValue = (v: any): v is ReactiveValue => {
   return (
     isObject(v) && (v.type === TYPE_MAP.signal || v.type === TYPE_MAP.computed)
@@ -26,10 +22,6 @@ export const isReactiveValue = (v: any): v is ReactiveValue => {
 
 export const isLwElement = (v: any): v is LwElement => {
   return isObject(v) && v.brand === LW_EL_SYMBOL;
-};
-
-export const isPropsObject = (v: any): v is Record<string, any> => {
-  return isPlainObject(v) && v.brand !== LW_EL_SYMBOL;
 };
 
 export const uppercaseLetterRegX = /[A-Z]/;
@@ -43,3 +35,6 @@ export const getEventTypeFromPropKey = (propKey: string) =>
   propKey.slice(2).toLowerCase();
 
 export const isFunction = (v: any): v is Function => typeof v === "function";
+
+export * from "./handlePropsArg";
+export * from "./isParentElement";

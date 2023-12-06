@@ -1,5 +1,8 @@
 import { ListCacheItem, ListElement, ListElementCache } from "../../elements";
+import { LwElement } from "../../types";
 import { findNextNode } from "../findNextNode";
+import { getDomParent } from "../getDomParent";
+import { removeElement } from "../removeElement";
 import { DomNode } from "../types";
 import { createListItem } from "./createListItem";
 
@@ -21,13 +24,13 @@ export const patchList = <Item>(el: ListElement<Item>) => {
       newCache.set(item, cacheItem);
       el.nodes.push(...cacheItem.nodes);
     }
-    const parentNode = el.htmlParent?.nodes?.[0];
+    const domParent = getDomParent(el);
 
-    if (parentNode) {
+    if (domParent) {
       const nextNode = findNextNode(el);
 
       for (const node of el.nodes) {
-        parentNode.insertBefore(node, nextNode ?? null);
+        domParent.insertBefore(node, nextNode ?? null);
       }
     }
 
@@ -35,10 +38,10 @@ export const patchList = <Item>(el: ListElement<Item>) => {
   }
   // fast path for new empty
   else if (newLen === 0) {
-    for (const node of el.nodes!) {
-      node.remove();
+    for (const childEl of el.children!) {
+      removeElement(childEl);
     }
-
+    el.children = [];
     el.cache.clear();
   }
   //
@@ -93,7 +96,7 @@ export const patchList = <Item>(el: ListElement<Item>) => {
       }
     }
 
-    const toBeRemoved: DomNode[] = [];
+    const toBeRemoved: LwElement[] = [];
 
     for (let i = 0; i < oldLen; i++) {
       const item = oldArr[i];
@@ -101,19 +104,19 @@ export const patchList = <Item>(el: ListElement<Item>) => {
       // old item no longer present
       if (!cacheItem) {
         const oldCacheItem = el.cache.get(item)!;
-        toBeRemoved.push(...oldCacheItem.nodes);
+        toBeRemoved.push(...oldCacheItem.els);
       }
     }
 
     el.cache = newCache;
 
     // remove
-    for (const node of toBeRemoved) {
-      node.remove();
+    for (const elToBeRemoved of toBeRemoved) {
+      removeElement(elToBeRemoved);
     }
 
     // insert
-    const parentNode = el.htmlParent?.nodes?.[0];
+    const domParent = getDomParent(el);
     for (const obj of toBeInserted) {
       let nextNode = null;
       const nextEl = el.children[obj.start];
@@ -121,7 +124,7 @@ export const patchList = <Item>(el: ListElement<Item>) => {
         nextNode = findNextNode(nextEl);
       }
       for (const node of obj.nodes) {
-        parentNode.insertBefore(node, nextNode);
+        domParent.insertBefore(node, nextNode);
       }
     }
   }

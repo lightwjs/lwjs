@@ -2,31 +2,35 @@ import { ShowElement } from "../../elements";
 import { syncEffect } from "../../reactive";
 import { createDomNodes } from "../createDomNodes";
 import { findNextNode } from "../findNextNode";
-import { removeShowElements } from "./removeShowElements";
+import { getDomParent } from "../getDomParent";
+import { removeElement } from "../removeElement";
 
-export const createShowElement = (el: ShowElement) => {
+export const createShowDom = (el: ShowElement) => {
   let prevCond: boolean | undefined;
 
-  syncEffect(() => {
+  const eff = syncEffect(() => {
     const cond = !!el.reactive.value;
 
     el.children = cond ? el.yesElements : el.noElements;
 
     if (prevCond != null && cond !== prevCond) {
       const elsToBeRemoved = cond ? el.noElements : el.yesElements;
-      removeShowElements(elsToBeRemoved);
+      for (const el of elsToBeRemoved) {
+        removeElement(el);
+      }
       const nodes = createDomNodes(el.children, el);
-      el.nodes = nodes;
       const nextNode = findNextNode(el);
-      const parentNode = el.htmlParent?.nodes?.[0];
+      const domParent = getDomParent(el);
 
-      if (parentNode) {
+      if (domParent) {
         for (const n of nodes) {
-          parentNode.insertBefore(n, nextNode ?? null);
+          domParent.insertBefore(n, nextNode ?? null);
         }
       }
     }
     prevCond = cond;
   });
-  return createDomNodes(el.children, el);
+
+  el.nodes = createDomNodes(el.children, el);
+  el.effects = [eff];
 };

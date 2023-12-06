@@ -1,5 +1,5 @@
 import { TYPE_MAP } from "../constants";
-import { context } from "./context";
+import { reactiveContext } from "./ReactiveContext";
 import { Subs } from "./types";
 
 export class Signal<Value = any> {
@@ -8,10 +8,10 @@ export class Signal<Value = any> {
   }
   type = TYPE_MAP.signal;
   _value;
-  subs: Subs = new Set();
+  subs: Subs | undefined;
 
   get value() {
-    context.trackSubs(this);
+    reactiveContext.trackSubs(this);
     return this._value;
   }
 
@@ -19,7 +19,7 @@ export class Signal<Value = any> {
     const prevValue = this._value;
     this._value = newValue;
     if (this._value !== prevValue) {
-      context.notifySubs(this);
+      reactiveContext.notifySubs(this);
     }
   }
 

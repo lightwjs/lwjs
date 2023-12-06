@@ -1,31 +1,46 @@
-import { context } from "./context";
+import { reactiveContext } from "./ReactiveContext";
+import { Subs } from "./types";
 
 export class Effect {
   constructor(fn: EffectFn, options?: EffectOptions) {
     this.fn = fn;
-    const timing = options?.timing ?? "sync";
+    this.timing = options?.timing ?? "sync";
 
-    const run = () => {
-      context.currentSub = this;
-      this.cleanup = this.fn();
-      context.currentSub = null;
-    };
-
-    let timedRun;
-
-    if (timing === "afterPaint") {
-      timedRun = () => requestAnimationFrame(run);
-    } else {
-      timedRun = run;
-    }
-
-    this.notify = timedRun;
-
-    timedRun();
+    this.scheduledRun();
   }
   fn;
-  notify;
   cleanup: EffectCleanupFn | undefined;
+  subs: Subs[] = [];
+  timing;
+
+  run() {
+    if (this.cleanup) this.cleanup();
+    reactiveContext.currentSub = this;
+    this.cleanup = this.fn();
+    reactiveContext.currentSub = null;
+  }
+
+  scheduledRun() {
+    if (this.timing === "afterPaint") {
+      requestAnimationFrame(() => this.run());
+    }
+    //
+    else {
+      this.run();
+    }
+  }
+
+  notify() {
+    this.scheduledRun();
+  }
+
+  dispose() {
+    if (this.cleanup) this.cleanup();
+    for (const subs of this.subs) {
+      subs.delete(this);
+    }
+    this.subs.length = 0;
+  }
 }
 
 export const syncEffect = (callback: () => any) => {

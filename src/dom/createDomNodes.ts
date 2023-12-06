@@ -2,38 +2,39 @@ import { TYPE_MAP } from "../constants";
 import { ProviderElement, ReactiveElement, TextElement } from "../elements";
 import { syncEffect } from "../reactive";
 import { LwElement } from "../types";
-import { createComponentElement } from "./createComponentElement";
-import { createHeadElement } from "./createHeadElement";
-import { createHtmlElement } from "./html";
-import { createList } from "./list";
-import { createShowElement } from "./show";
+import { createComponentElement } from "./createComponentDom";
+import { createHeadElement } from "./createHeadElementDom";
+import { createHtmlElementDom } from "./html";
+import { createListDom } from "./list";
+import { createShowDom } from "./show";
 import { DomNode } from "./types";
 
-const createTextElement = (el: TextElement) => {
-  return new Text(String(el.text));
+const createTextElementDom = (el: TextElement) => {
+  el.nodes = [document.createTextNode(String(el.text))];
 };
 
-const createReactiveElement = (el: ReactiveElement) => {
-  const node = new Text(el.reactive.value);
+const createReactiveElementDom = (el: ReactiveElement) => {
+  const node = document.createTextNode(el.reactive.value);
 
-  syncEffect(() => {
+  const eff = syncEffect(() => {
     node.textContent = el.reactive.value;
   });
 
-  return node;
+  el.nodes = [node];
+  el.effects = [eff];
 };
 
-const createProviderElement = (el: ProviderElement<any>) => {
-  return createDomNodes(el.children, el);
+const createProviderElementDom = (el: ProviderElement<any>) => {
+  el.nodes = createDomNodes(el.children, el);
 };
 
 const CREATE_MAP = {
-  [TYPE_MAP.html]: createHtmlElement,
-  [TYPE_MAP.txt]: createTextElement,
-  [TYPE_MAP.reactive]: createReactiveElement,
-  [TYPE_MAP.show]: createShowElement,
-  [TYPE_MAP.list]: createList,
-  [TYPE_MAP.provider]: createProviderElement,
+  [TYPE_MAP.html]: createHtmlElementDom,
+  [TYPE_MAP.txt]: createTextElementDom,
+  [TYPE_MAP.reactive]: createReactiveElementDom,
+  [TYPE_MAP.show]: createShowDom,
+  [TYPE_MAP.list]: createListDom,
+  [TYPE_MAP.provider]: createProviderElementDom,
   [TYPE_MAP.component]: createComponentElement,
   [TYPE_MAP.head]: createHeadElement,
 };
@@ -64,15 +65,7 @@ export const createDomNodes = (
     }
 
     result = CREATE_MAP[el.type](el as any);
-    el.nodes = Array.isArray(result) ? result : [result];
-
-    if (Array.isArray(result)) {
-      domNodes.push(...result);
-    }
-    //
-    else {
-      domNodes.push(result);
-    }
+    domNodes.push(...(el.nodes ?? []));
   }
 
   return domNodes;

@@ -5,9 +5,10 @@ import { isReactiveValue } from "../utils";
 export const createHeadElement = (el: HeadElement) => {
   if (el.tag === "title") {
     if (isReactiveValue(el.props.text)) {
-      syncEffect(() => {
+      const eff = syncEffect(() => {
         document.title = el.props.text.value;
       });
+      el.effects = [eff];
     }
     //
     else {
@@ -25,9 +26,10 @@ export const createHeadElement = (el: HeadElement) => {
     for (const key of keys) {
       const value = el.props[key];
       if (isReactiveValue(value)) {
-        syncEffect(() => {
+        const eff = syncEffect(() => {
           meta.setAttribute(key, value.value);
         });
+        el.effects = [eff];
       }
       //
       else {

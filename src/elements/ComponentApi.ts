@@ -19,7 +19,8 @@ export class ComponentApi<Props> {
   }
 
   effect(fn: EffectFn) {
-    new Effect(fn, { timing: "afterPaint" });
+    const eff = new Effect(fn, { timing: "afterPaint" });
+    this._el.effects.push(eff);
   }
 
   getContext<Value>(context: Context<Value>) {

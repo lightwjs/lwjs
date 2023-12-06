@@ -1,1 +1,1 @@
-export * from "./createHtmlElement";
+export * from "./createHtmlElementDom";

@@ -1,4 +1,5 @@
 import { LW_EL_SYMBOL, TYPE_MAP } from "../constants";
+import { Effect } from "../reactive";
 import { BaseLwElement, LwElement, LwNode } from "../types";
 import { Context } from "./Context";
 import { HtmlElement } from "./HtmlElement";
@@ -19,6 +20,7 @@ export class ProviderElement<Value> implements BaseLwElement {
   nextEl?: LwElement;
   nodes?: any[];
   parent?: LwElement;
+  effects?: Effect[];
 }
 
 export type ProviderProps<Value> = {

@@ -8,6 +8,7 @@ import {
   ShowElement,
   TextElement,
 } from "../elements";
+import { Effect } from "../reactive";
 
 export interface BaseLwElement {
   brand: Symbol;
@@ -15,6 +16,7 @@ export interface BaseLwElement {
   nodes?: any[];
   parent?: LwElement;
   htmlParent?: HtmlElement;
+  effects?: Effect[];
 }
 
 export type LwElement =

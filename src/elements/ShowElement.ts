@@ -1,5 +1,5 @@
 import { LW_EL_SYMBOL, TYPE_MAP } from "../constants";
-import { ReactiveValue } from "../reactive";
+import { Effect, ReactiveValue } from "../reactive";
 import { BaseLwElement, LwElement, LwNode } from "../types";
 import { HtmlElement } from "./HtmlElement";
 import { createElements } from "./createElements";
@@ -22,6 +22,7 @@ export class ShowElement implements BaseLwElement {
   nodes?: any[];
   parent?: LwElement;
   children: LwElement[] = [];
+  effects?: Effect[];
 }
 
 export const show = (when: ReactiveValue, then: LwNode, otherwise?: LwNode) =>

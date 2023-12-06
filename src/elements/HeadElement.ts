@@ -1,5 +1,5 @@
 import { LW_EL_SYMBOL, TYPE_MAP } from "../constants";
-import { ReactiveValue } from "../reactive";
+import { Effect, ReactiveValue } from "../reactive";
 import { BaseLwElement, LwElement, LwReactiveProps } from "../types";
 import { HtmlElement } from "./HtmlElement";
 
@@ -11,6 +11,7 @@ export class HeadElement implements BaseLwElement {
   nextEl?: LwElement;
   nodes?: any[];
   parent?: LwElement;
+  effects?: Effect[];
 }
 
 type MetaProps = LwReactiveProps<{

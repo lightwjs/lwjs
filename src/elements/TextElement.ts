@@ -1,4 +1,5 @@
 import { LW_EL_SYMBOL, TYPE_MAP } from "../constants";
+import { Effect } from "../reactive";
 import { BaseLwElement, LwElement, TextNode } from "../types";
 import { HtmlElement } from "./HtmlElement";
 
@@ -10,4 +11,5 @@ export class TextElement implements BaseLwElement {
   nextEl?: LwElement;
   nodes?: any[];
   parent?: LwElement;
+  effects?: Effect[];
 }

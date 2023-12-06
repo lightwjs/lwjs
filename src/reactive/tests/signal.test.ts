@@ -21,4 +21,10 @@ describe("signal", () => {
     const s = signal(0);
     expect(s.toJSON()).equal(0);
   });
+
+  test("value is updated", () => {
+    const s = signal(0);
+    s.value = 1;
+    expect(s.value).equal(1);
+  });
 });

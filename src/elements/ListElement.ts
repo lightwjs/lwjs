@@ -1,5 +1,5 @@
 import { LW_EL_SYMBOL, TYPE_MAP } from "../constants";
-import { ReactiveValue, Signal } from "../reactive";
+import { Effect, ReactiveValue, Signal } from "../reactive";
 import { BaseLwElement, LwElement, LwNode } from "../types";
 import { HtmlElement } from "./HtmlElement";
 
@@ -17,6 +17,7 @@ export class ListElement<Item> implements BaseLwElement {
   prevArr: Item[] = [];
   children: LwElement[] = [];
   cache: ListElementCache<Item> = new Map();
+  effects?: Effect[];
 }
 
 export const list = <Item>(

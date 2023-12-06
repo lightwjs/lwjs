@@ -1,5 +1,5 @@
 import { TYPE_MAP } from "../constants";
-import { context } from "./context";
+import { reactiveContext } from "./ReactiveContext";
 import { Subs } from "./types";
 
 export class Computed<Value = any> {
@@ -10,14 +10,14 @@ export class Computed<Value = any> {
   _value!: Value;
   isDirty = true;
   compute;
-  subs: Subs = new Set();
+  subs: Subs | undefined;
 
   get value() {
-    context.trackSubs(this);
+    reactiveContext.trackSubs(this);
     if (this.isDirty) {
-      context.currentSub = this;
+      reactiveContext.currentSub = this;
       this._value = this.compute();
-      context.currentSub = null;
+      reactiveContext.currentSub = null;
       this.isDirty = false;
     }
     return this._value;
@@ -25,7 +25,7 @@ export class Computed<Value = any> {
 
   notify() {
     this.isDirty = true;
-    context.notifySubs(this);
+    reactiveContext.notifySubs(this);
   }
 
   toString() {

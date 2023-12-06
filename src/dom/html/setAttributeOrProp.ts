@@ -1,27 +1,16 @@
-import { HtmlElement } from "../../elements";
 import { setStyleAttribute } from "./setStyleAttribute";
 
 export const setAttributeOrProp = (
-  el: HtmlElement,
+  node: HTMLElement | SVGElement,
   key: string,
   value: any
 ) => {
-  const node = el.nodes?.[0];
-  if (!node) return;
   if (key === "style") {
-    setStyleAttribute(el, value);
+    setStyleAttribute(node, value);
   }
   //
   else if (key === "css") {
-    // if (isFunction(value)) {
-    //   syncEffect(() => {
-    //     setCssClass(node, value());
-    //   });
-    // }
-    // //
-    // else {
-    //   setCssClass(node, value);
-    // }
+    // setCssClass(node, value);
   }
   //
   else if (PROP_MAP[key]) {
