@@ -1,0 +1,1 @@
+export const MAX_RULES_PER_STYLE_EL = 65000;

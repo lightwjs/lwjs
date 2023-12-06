@@ -1,4 +1,3 @@
-import { SVG_MAP } from "../constants";
 import { HTMLElementPropMap, LwNode, SVGElementPropMap } from "../types";
 import { handlePropsArg } from "../utils";
 import { HtmlElement } from "./HtmlElement";
@@ -20,12 +19,7 @@ export const h: HFn = <Tag extends AllKeys>(
 ) => {
   const { props, nodesToPass } = handlePropsArg(propsOrNode, nodes);
 
-  return new HtmlElement(
-    tag,
-    props,
-    createElements(nodesToPass),
-    tag in SVG_MAP
-  );
+  return new HtmlElement(tag, props, createElements(nodesToPass));
 };
 
 type AllKeys = keyof HTMLElementPropMap | keyof SVGElementPropMap;

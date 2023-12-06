@@ -1,11 +1,14 @@
-import { ShowElement } from "../../elements";
-import { syncEffect } from "../../reactive";
-import { createDomNodes } from "../createDomNodes";
-import { findNextNode } from "../findNextNode";
-import { getDomParent } from "../getDomParent";
-import { removeElement } from "../removeElement";
+import { ShowElement } from "../elements";
+import { syncEffect } from "../reactive";
+import { DomRenderer } from "./DomRenderer";
+import { findNextNode } from "./findNextNode";
+import { getDomParent } from "./getDomParent";
+import { removeElement } from "./removeElement";
 
-export const createShowDom = (el: ShowElement) => {
+export const createShowElementDom = (
+  el: ShowElement,
+  renderer: DomRenderer
+) => {
   let prevCond: boolean | undefined;
 
   const eff = syncEffect(() => {
@@ -18,7 +21,7 @@ export const createShowDom = (el: ShowElement) => {
       for (const el of elsToBeRemoved) {
         removeElement(el);
       }
-      const nodes = createDomNodes(el.children, el);
+      const nodes = renderer.create(el.children, el);
       const nextNode = findNextNode(el);
       const domParent = getDomParent(el);
 
@@ -31,6 +34,6 @@ export const createShowDom = (el: ShowElement) => {
     prevCond = cond;
   });
 
-  el.nodes = createDomNodes(el.children, el);
+  el.nodes = renderer.create(el.children, el);
   el.effects = [eff];
 };

@@ -2,7 +2,7 @@ import { HeadElement } from "../elements";
 import { syncEffect } from "../reactive";
 import { isReactiveValue } from "../utils";
 
-export const createHeadElement = (el: HeadElement) => {
+export const createHeadElementDom = (el: HeadElement) => {
   if (el.tag === "title") {
     if (isReactiveValue(el.props.text)) {
       const eff = syncEffect(() => {

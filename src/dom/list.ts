@@ -1,12 +1,62 @@
-import { ListCacheItem, ListElement, ListElementCache } from "../../elements";
-import { LwElement } from "../../types";
-import { findNextNode } from "../findNextNode";
-import { getDomParent } from "../getDomParent";
-import { removeElement } from "../removeElement";
-import { DomNode } from "../types";
-import { createListItem } from "./createListItem";
+import {
+  ListCacheItem,
+  ListElement,
+  ListElementCache,
+  createElements,
+} from "../elements";
+import { signal, syncEffect } from "../reactive";
+import { LwElement } from "../types";
+import { DomRenderer } from "./DomRenderer";
+import { findNextNode } from "./findNextNode";
+import { getDomParent } from "./getDomParent";
+import { removeElement } from "./removeElement";
+import { DomNode } from "./types";
 
-export const patchList = <Item>(el: ListElement<Item>) => {
+export const createListElementDom = <Item>(
+  el: ListElement<Item>,
+  renderer: DomRenderer
+) => {
+  const arr = el.arr.value;
+  el.prevArr = arr;
+  const len = arr.length;
+  for (let i = 0; i < len; i++) {
+    const item = arr[i];
+    const cacheItem = createListItem(arr[i], i, el, renderer);
+    el.children.push(...cacheItem.els);
+    el.cache.set(item, cacheItem);
+  }
+
+  let didInit = false;
+
+  const eff = syncEffect(() => {
+    el.arr.value;
+    if (!didInit) return;
+    patchList(el, renderer);
+  });
+
+  didInit = true;
+
+  el.nodes = renderer.create(el.children, el);
+  el.effects = [eff];
+};
+
+const createListItem = <Item>(
+  item: Item,
+  i: number,
+  el: ListElement<Item>,
+  renderer: DomRenderer
+): ListCacheItem => {
+  const index = signal(i);
+  const els = createElements(el.renderItem(item, index));
+  const nodes = renderer.create(els, el);
+  return {
+    els,
+    nodes,
+    index,
+  };
+};
+
+const patchList = <Item>(el: ListElement<Item>, renderer: DomRenderer) => {
   const oldArr = el.prevArr;
   const newArr = el.arr.value;
   const oldLen = oldArr.length;
@@ -20,7 +70,7 @@ export const patchList = <Item>(el: ListElement<Item>) => {
     el.children = [];
     for (let i = 0; i < newLen; i++) {
       const item = newArr[i];
-      const cacheItem = createListItem(item, i, el);
+      const cacheItem = createListItem(item, i, el, renderer);
       newCache.set(item, cacheItem);
       el.nodes.push(...cacheItem.nodes);
     }
@@ -90,7 +140,7 @@ export const patchList = <Item>(el: ListElement<Item>) => {
       }
       // new item
       else {
-        const cacheItem = createListItem(item, i, el);
+        const cacheItem = createListItem(item, i, el, renderer);
         newCache.set(item, cacheItem);
         addToInsert(cacheItem);
       }
