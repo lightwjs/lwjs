@@ -1,6 +1,7 @@
 import { TYPE_MAP } from "../constants";
 import { HtmlElement, ProviderElement, createElements } from "../elements";
 import { LwElement, LwNode } from "../types";
+import { isLwObjectOfType } from "../utils";
 import { CssRenderer } from "./CssRenderer";
 import { createComponentElementDom } from "./component";
 import { createHeadElementDom } from "./head";
@@ -31,7 +32,7 @@ export class DomRenderer {
       }
 
       el.parent = parent;
-      if (parent.type === TYPE_MAP.html) {
+      if (isLwObjectOfType(parent, "html")) {
         el.htmlParent = parent;
       }
       //

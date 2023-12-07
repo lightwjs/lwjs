@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { Effect, syncEffect } from "../Effect";
-import { signal } from "../Signal";
+import { Signal } from "../Signal";
 
 describe("effect", () => {
   test("creation", () => {
@@ -15,7 +15,7 @@ describe("effect", () => {
   });
 
   test("run called when single dep change", () => {
-    const s = signal(0);
+    const s = new Signal(0);
     const spy = vi.fn(() => s.value);
     syncEffect(spy);
     expect(spy).toBeCalledTimes(1);
@@ -27,8 +27,8 @@ describe("effect", () => {
   });
 
   test("run called when multiple deps change", () => {
-    const s1 = signal(0);
-    const s2 = signal(0);
+    const s1 = new Signal(0);
+    const s2 = new Signal(0);
     const spy = vi.fn(() => {
       s1.value;
       s2.value;
@@ -44,7 +44,7 @@ describe("effect", () => {
   });
 
   test("mutiple effects called when deps change", () => {
-    const s = signal(0);
+    const s = new Signal(0);
     const spy1 = vi.fn(() => {
       s.value;
     });

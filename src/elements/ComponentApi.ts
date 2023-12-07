@@ -1,6 +1,6 @@
-import { TYPE_MAP } from "../constants";
-import { Effect, EffectFn, Signal } from "../reactive";
+import { Computed, Effect, EffectFn, Signal } from "../reactive";
 import { LwElement } from "../types";
+import { isLwObjectOfType } from "../utils";
 import { ComponentElement } from "./ComponentElement";
 import { Context } from "./Context";
 
@@ -18,6 +18,10 @@ export class ComponentApi<Props> {
     return new Signal(initialValue);
   }
 
+  computed<Value>(compute: () => Value) {
+    return new Computed(compute);
+  }
+
   effect(fn: EffectFn) {
     const eff = new Effect(fn, { timing: "afterPaint" });
     this._el.effects.push(eff);
@@ -27,7 +31,7 @@ export class ComponentApi<Props> {
     let current: LwElement | undefined = this._el;
 
     while (current) {
-      if (current.type === TYPE_MAP.provider && current.ctx === context) {
+      if (isLwObjectOfType(current, "provider") && current.ctx === context) {
         return current.value as Value;
       }
       current = current.parent;

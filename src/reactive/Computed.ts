@@ -36,7 +36,3 @@ export class Computed<Value = any> {
     return this.value;
   }
 }
-
-export const computed = <Value>(compute: () => Value) => {
-  return new Computed(compute);
-};

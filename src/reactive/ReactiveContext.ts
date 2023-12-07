@@ -1,5 +1,4 @@
-import { Computed } from "./Computed";
-import { Effect } from "./Effect";
+import { isLwObjectOfType } from "../utils";
 import { ReactiveValue, Sub } from "./types";
 
 class ReactiveContext {
@@ -9,7 +8,7 @@ class ReactiveContext {
     if (!this.currentSub) return;
     if (reactive.subs == null) reactive.subs = new Set();
     reactive.subs.add(this.currentSub);
-    if (this.currentSub instanceof Effect) {
+    if (isLwObjectOfType(this.currentSub, "effect")) {
       this.currentSub.subs.push(reactive.subs);
     }
   }
@@ -19,12 +18,12 @@ class ReactiveContext {
     if (!subs || subs.size === 0) return;
 
     for (const sub of subs) {
-      if (sub instanceof Effect) {
+      if (isLwObjectOfType(sub, "effect")) {
         sub.notify();
       }
     }
     for (const sub of subs) {
-      if (sub instanceof Computed) {
+      if (isLwObjectOfType(sub, "computed")) {
         sub.notify();
       }
     }

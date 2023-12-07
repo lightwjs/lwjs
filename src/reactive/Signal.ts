@@ -31,5 +31,3 @@ export class Signal<Value = any> {
     return this.value;
   }
 }
-
-export const signal = <Value>(initialValue: Value) => new Signal(initialValue);

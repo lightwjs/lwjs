@@ -4,7 +4,7 @@ import {
   ListElementCache,
   createElements,
 } from "../elements";
-import { signal, syncEffect } from "../reactive";
+import { Signal, syncEffect } from "../reactive";
 import { LwElement } from "../types";
 import { DomRenderer } from "./DomRenderer";
 import { findNextNode } from "./findNextNode";
@@ -46,7 +46,7 @@ const createListItem = <Item>(
   el: ListElement<Item>,
   renderer: DomRenderer
 ): ListCacheItem => {
-  const index = signal(i);
+  const index = new Signal(i);
   const els = createElements(el.renderItem(item, index));
   const nodes = renderer.create(els, el);
   return {

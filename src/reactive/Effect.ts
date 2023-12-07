@@ -1,3 +1,4 @@
+import { TYPE_MAP } from "../constants";
 import { reactiveContext } from "./ReactiveContext";
 import { Subs } from "./types";
 
@@ -8,6 +9,7 @@ export class Effect {
 
     this.scheduledRun();
   }
+  type = TYPE_MAP.effect;
   fn;
   cleanup: EffectCleanupFn | undefined;
   subs: Subs[] = [];
