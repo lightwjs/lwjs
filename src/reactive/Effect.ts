@@ -1,10 +1,11 @@
 import { TYPE_MAP } from "../constants";
-import { reactiveContext } from "./ReactiveContext";
+import { ReactiveContext } from "./ReactiveContext";
 import { Subs } from "./types";
 
 export class Effect {
-  constructor(fn: EffectFn, options?: EffectOptions) {
+  constructor(fn: EffectFn, ctx: ReactiveContext, options?: EffectOptions) {
     this.fn = fn;
+    this.ctx = ctx;
     this.timing = options?.timing ?? "sync";
 
     this.scheduledRun();
@@ -14,12 +15,13 @@ export class Effect {
   cleanup: EffectCleanupFn | undefined;
   subs: Subs[] = [];
   timing;
+  ctx;
 
   run() {
     if (this.cleanup) this.cleanup();
-    reactiveContext.currentSub = this;
+    this.ctx.currentSub = this;
     this.cleanup = this.fn();
-    reactiveContext.currentSub = null;
+    this.ctx.currentSub = null;
   }
 
   scheduledRun() {
@@ -44,10 +46,6 @@ export class Effect {
     this.subs.length = 0;
   }
 }
-
-export const syncEffect = (callback: () => any) => {
-  return new Effect(callback);
-};
 
 export type EffectOptions = {
   timing?: "sync" | "afterPaint";

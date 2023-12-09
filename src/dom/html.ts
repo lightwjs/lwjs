@@ -1,5 +1,5 @@
 import { HtmlElement } from "../elements";
-import { syncEffect } from "../reactive";
+import { Effect } from "../reactive";
 import {
   getEventTypeFromPropKey,
   isEventProp,
@@ -29,15 +29,15 @@ export const createHtmlElementDom = (
     //
     else {
       if (isReactiveValue(value)) {
-        const eff = syncEffect(() => {
-          setAttributeOrProp(dom, key, value.value, renderer);
-        });
+        const eff = new Effect(() => {
+          setAttributeOrProp(el, dom, key, value.value, renderer);
+        }, renderer.reactiveContext);
         if (!el.effects) el.effects = [];
         el.effects.push(eff);
       }
       //
       else {
-        setAttributeOrProp(dom, key, value, renderer);
+        setAttributeOrProp(el, dom, key, value, renderer);
       }
     }
   }
@@ -46,6 +46,7 @@ export const createHtmlElementDom = (
 };
 
 export const setAttributeOrProp = (
+  el: HtmlElement,
   node: HTMLElement | SVGElement,
   key: string,
   value: any,
@@ -56,7 +57,7 @@ export const setAttributeOrProp = (
   }
   //
   else if (key === "css") {
-    setCssClass(node, value, renderer);
+    setCssClass(el, node, value, renderer);
   }
   //
   else if (PROP_MAP[key]) {
@@ -78,17 +79,29 @@ export const setStyleAttribute = (
     if (typeof v === "number") {
       v = `${v}px`;
     }
-    // @ts-expect-error I don't know 🤷‍♂️
-    node.style[key] = v;
+    node.style[key as any] = v;
   }
 };
 
 export const setCssClass = (
+  el: HtmlElement,
   node: HTMLElement | SVGElement,
   value: any,
   renderer: DomRenderer
 ) => {
   const className = renderer.cssRenderer.getCssClass(value);
+
+  if (el.cls) {
+    if (el.cls !== className) {
+      node.classList.remove(el.cls);
+    }
+    //
+    else {
+      return;
+    }
+  }
+
+  el.cls = className;
   node.classList.add(className);
 };
 

@@ -1,5 +1,6 @@
 import { TYPE_MAP } from "../constants";
 import { HtmlElement, ProviderElement, createElements } from "../elements";
+import { ReactiveContext } from "../reactive";
 import { LwElement, LwNode } from "../types";
 import { isLwObjectOfType } from "../utils";
 import { CssRenderer } from "./CssRenderer";
@@ -15,8 +16,10 @@ import { DomNode } from "./types";
 export class DomRenderer {
   constructor() {
     this.cssRenderer = new CssRenderer();
+    this.reactiveContext = new ReactiveContext();
   }
   cssRenderer;
+  reactiveContext;
 
   create(elements: LwElement[], parent: LwElement) {
     const domNodes: DomNode[] = [];

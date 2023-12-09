@@ -1,23 +1,25 @@
 import { TYPE_MAP } from "../constants";
-import { reactiveContext } from "./ReactiveContext";
+import { ReactiveContext } from "./ReactiveContext";
 import { Subs } from "./types";
 
 export class Computed<Value = any> {
-  constructor(compute: () => Value) {
+  constructor(compute: () => Value, ctx: ReactiveContext) {
     this.compute = compute;
+    this._ctx = ctx;
   }
   type = TYPE_MAP.computed;
   _value!: Value;
   isDirty = true;
   compute;
   subs: Subs | undefined;
+  _ctx;
 
   get value() {
-    reactiveContext.trackSubs(this);
+    this._ctx.trackSubs(this);
     if (this.isDirty) {
-      reactiveContext.currentSub = this;
+      this._ctx.currentSub = this;
       this._value = this.compute();
-      reactiveContext.currentSub = null;
+      this._ctx.currentSub = null;
       this.isDirty = false;
     }
     return this._value;
@@ -25,7 +27,7 @@ export class Computed<Value = any> {
 
   notify() {
     this.isDirty = true;
-    reactiveContext.notifySubs(this);
+    this._ctx.notifySubs(this);
   }
 
   toString() {

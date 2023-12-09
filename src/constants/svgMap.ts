@@ -62,6 +62,6 @@ export const svgTags: (keyof SVGElementPropMap)[] = [
 ];
 
 export const SVG_MAP = svgTags.reduce((m, t) => {
-  m[t] = 1;
+  m[t] = true;
   return m;
-}, {} as Record<keyof SVGElementTagNameMap, 1>);
+}, {} as Record<keyof SVGElementTagNameMap, boolean>);

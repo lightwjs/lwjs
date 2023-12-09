@@ -4,7 +4,7 @@ import {
   ListElementCache,
   createElements,
 } from "../elements";
-import { Signal, syncEffect } from "../reactive";
+import { Effect, Signal } from "../reactive";
 import { LwElement } from "../types";
 import { DomRenderer } from "./DomRenderer";
 import { findNextNode } from "./findNextNode";
@@ -28,11 +28,11 @@ export const createListElementDom = <Item>(
 
   let didInit = false;
 
-  const eff = syncEffect(() => {
+  const eff = new Effect(() => {
     el.arr.value;
     if (!didInit) return;
     patchList(el, renderer);
-  });
+  }, renderer.reactiveContext);
 
   didInit = true;
 
@@ -46,7 +46,7 @@ const createListItem = <Item>(
   el: ListElement<Item>,
   renderer: DomRenderer
 ): ListCacheItem => {
-  const index = new Signal(i);
+  const index = new Signal(i, renderer.reactiveContext);
   const els = createElements(el.renderItem(item, index));
   const nodes = renderer.create(els, el);
   return {

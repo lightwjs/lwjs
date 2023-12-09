@@ -1,7 +1,7 @@
 import { isLwObjectOfType } from "../utils";
 import { ReactiveValue, Sub } from "./types";
 
-class ReactiveContext {
+export class ReactiveContext {
   currentSub: Sub | null = null;
 
   trackSubs(reactive: ReactiveValue) {
@@ -29,5 +29,3 @@ class ReactiveContext {
     }
   }
 }
-
-export const reactiveContext = new ReactiveContext();

@@ -1,5 +1,5 @@
 import { ShowElement } from "../elements";
-import { syncEffect } from "../reactive";
+import { Effect } from "../reactive";
 import { DomRenderer } from "./DomRenderer";
 import { findNextNode } from "./findNextNode";
 import { getDomParent } from "./getDomParent";
@@ -11,7 +11,7 @@ export const createShowElementDom = (
 ) => {
   let prevCond: boolean | undefined;
 
-  const eff = syncEffect(() => {
+  const eff = new Effect(() => {
     const cond = !!el.reactive.value;
 
     el.children = cond ? el.yesElements : el.noElements;
@@ -32,7 +32,7 @@ export const createShowElementDom = (
       }
     }
     prevCond = cond;
-  });
+  }, renderer.reactiveContext);
 
   el.nodes = renderer.create(el.children, el);
   el.effects = [eff];

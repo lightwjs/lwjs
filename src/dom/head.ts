@@ -1,13 +1,17 @@
 import { HeadElement } from "../elements";
-import { syncEffect } from "../reactive";
+import { Effect } from "../reactive";
 import { isReactiveValue } from "../utils";
+import { DomRenderer } from "./DomRenderer";
 
-export const createHeadElementDom = (el: HeadElement) => {
+export const createHeadElementDom = (
+  el: HeadElement,
+  renderer: DomRenderer
+) => {
   if (el.tag === "title") {
     if (isReactiveValue(el.props.text)) {
-      const eff = syncEffect(() => {
+      const eff = new Effect(() => {
         document.title = el.props.text.value;
-      });
+      }, renderer.reactiveContext);
       el.effects = [eff];
     }
     //
@@ -26,9 +30,9 @@ export const createHeadElementDom = (el: HeadElement) => {
     for (const key of keys) {
       const value = el.props[key];
       if (isReactiveValue(value)) {
-        const eff = syncEffect(() => {
+        const eff = new Effect(() => {
           meta.setAttribute(key, value.value);
-        });
+        }, renderer.reactiveContext);
         el.effects = [eff];
       }
       //
