@@ -6,7 +6,6 @@ export const getCssRules = (cssObject: CSSObject): FinishedRule[] => {
 
   const hashString = hash(finishedRule.css);
   const className = `lw-${hashString}`;
-
   const selector = `.${className}`;
 
   return [
@@ -19,17 +18,22 @@ export const getCssRules = (cssObject: CSSObject): FinishedRule[] => {
   ];
 };
 
-const handleCssRules = (parentSelector: string, rules: Result[]) => {
+const handleCssRules = (parentSelector: string, rules: RawRule[]) => {
   let result: FinishedRule[] = [];
 
   for (const rule of rules) {
-    let selector = `${parentSelector} ${rule.key}`;
+    let selector;
 
-    if (rule.key.indexOf(":") === 0) {
+    if (rule.key.indexOf("&") === 0) {
+      selector = rule.key.replace(/&/g, parentSelector);
+    }
+    //
+    else if (rule.key.indexOf(":") === 0) {
       selector = `${parentSelector}${rule.key}`;
     }
     //
-    else if (rule.key.indexOf("&") === 0) {
+    else {
+      selector = `${parentSelector} ${rule.key}`;
     }
 
     result.push(
@@ -46,7 +50,7 @@ const handleCssRules = (parentSelector: string, rules: Result[]) => {
 };
 
 const handleCssObject = (cssObject: CSSObject, key?: string) => {
-  const result: Result = {
+  const result: RawRule = {
     key: key!,
     css: "",
     hash: "",
@@ -76,22 +80,15 @@ const handleCssObject = (cssObject: CSSObject, key?: string) => {
   return result;
 };
 
-type Result = {
+type RawRule = {
   key: string;
   hash: string;
   css: string;
-  rules: Result[];
+  rules: RawRule[];
 };
 
 type FinishedRule = {
   hash: string;
   selector: string;
   css: string;
-};
-
-type FinishedRules = {
-  [hash: string]: {
-    selector: string;
-    css: string;
-  };
 };
