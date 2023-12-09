@@ -1,5 +1,5 @@
 import { MAX_RULES_PER_STYLE_EL } from "../constants";
-import { hash, serializeCss } from "../css";
+import { getCssRules } from "../css";
 import { CSSObject } from "../types";
 
 export class CssRenderer {
@@ -45,15 +45,16 @@ export class CssRenderer {
   }
 
   getCssClass(obj: CSSObject) {
-    const css = serializeCss(obj);
-    const className = `css-${hash(css)}`;
+    const rules = getCssRules(obj);
 
-    if (!this.cache[className]) {
-      this.cache[className] = 1;
-      this.insertRule(`.${className}{${css}}`);
+    for (const rule of rules) {
+      if (!this.cache[rule.hash]) {
+        this.cache[rule.hash] = 1;
+        this.insertRule(`${rule.selector}{${rule.css}}`);
+      }
     }
 
-    return className;
+    return rules[0].selector.slice(1);
   }
 }
 
