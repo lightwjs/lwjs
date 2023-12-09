@@ -56,7 +56,7 @@ const handleCssObject = (cssObject: CSSObject, key?: string) => {
   const keys = Object.keys(cssObject);
 
   for (const key of keys) {
-    let v = cssObject[key] as any;
+    let v = cssObject[key];
 
     if (typeof v === "object") {
       result.rules.push(handleCssObject(v, key));
