@@ -173,6 +173,11 @@ const patchList = <Item>(el: ListElement<Item>, renderer: DomRenderer) => {
       if (nextEl) {
         nextNode = findNextNode(nextEl);
       }
+      //
+      else {
+        nextNode = findNextNode(el);
+      }
+
       for (const node of obj.nodes) {
         domParent.insertBefore(node, nextNode);
       }
