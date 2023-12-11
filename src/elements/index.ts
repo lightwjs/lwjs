@@ -4,6 +4,7 @@ export * from "./Context";
 export * from "./HeadElement";
 export * from "./HtmlElement";
 export * from "./ListElement";
+export * from "./OutletElement";
 export * from "./ProviderElement";
 export * from "./ReactiveElement";
 export * from "./ShowElement";

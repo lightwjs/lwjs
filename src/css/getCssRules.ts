@@ -2,51 +2,20 @@ import { CSSObject } from "../types";
 import { hash } from "./hash";
 
 export const getCssRules = (cssObject: CSSObject): FinishedRule[] => {
-  const finishedRule = handleCssObject(cssObject);
+  const rawRule = handleCssObject(cssObject);
 
-  const hashString = hash(finishedRule.css);
+  const hashString = hash(rawRule.css);
   const className = `lw-${hashString}`;
   const selector = `.${className}`;
 
   return [
     {
       hash: hashString,
-      css: finishedRule.css,
+      css: rawRule.css,
       selector,
     },
-    ...handleCssRules(selector, finishedRule.rules),
+    ...handleCssRules(selector, rawRule.rules),
   ];
-};
-
-const handleCssRules = (parentSelector: string, rules: RawRule[]) => {
-  let result: FinishedRule[] = [];
-
-  for (const rule of rules) {
-    let selector;
-
-    if (rule.key.indexOf("&") === 0) {
-      selector = rule.key.replace(/&/g, parentSelector);
-    }
-    //
-    else if (rule.key.indexOf(":") === 0) {
-      selector = `${parentSelector}${rule.key}`;
-    }
-    //
-    else {
-      selector = `${parentSelector} ${rule.key}`;
-    }
-
-    result.push(
-      {
-        hash: rule.hash,
-        selector,
-        css: rule.css,
-      },
-      ...handleCssRules(selector, rule.rules)
-    );
-  }
-
-  return result;
 };
 
 const handleCssObject = (cssObject: CSSObject, key?: string) => {
@@ -76,6 +45,37 @@ const handleCssObject = (cssObject: CSSObject, key?: string) => {
     result.css += `${k}:${v};`;
   }
   result.hash = hash(result.css);
+
+  return result;
+};
+
+const handleCssRules = (parentSelector: string, rules: RawRule[]) => {
+  let result: FinishedRule[] = [];
+
+  for (const rule of rules) {
+    let selector;
+
+    if (rule.key.indexOf("&") === 0) {
+      selector = rule.key.replace(/&/g, parentSelector);
+    }
+    //
+    else if (rule.key.indexOf(":") === 0) {
+      selector = `${parentSelector}${rule.key}`;
+    }
+    //
+    else {
+      selector = `${parentSelector} ${rule.key}`;
+    }
+
+    result.push(
+      {
+        hash: rule.hash,
+        selector,
+        css: rule.css,
+      },
+      ...handleCssRules(selector, rule.rules)
+    );
+  }
 
   return result;
 };

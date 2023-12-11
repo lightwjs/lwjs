@@ -1,6 +1,6 @@
 import { MAX_RULES_PER_STYLE_EL } from "../constants";
 import { getCssRules } from "../css";
-import { CSSObject } from "../types";
+import { CSSObject, CssCache } from "../types";
 
 export class CssRenderer {
   constructor() {}
@@ -49,7 +49,7 @@ export class CssRenderer {
 
     for (const rule of rules) {
       if (!this.cache[rule.hash]) {
-        this.cache[rule.hash] = 1;
+        this.cache[rule.hash] = true;
         this.insertRule(`${rule.selector}{${rule.css}}`);
       }
     }
@@ -57,5 +57,3 @@ export class CssRenderer {
     return rules[0].selector.slice(1);
   }
 }
-
-type CssCache = Record<string, 1>;

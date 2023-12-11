@@ -21,7 +21,7 @@ export class ComponentElement<Props> implements BaseLwElement {
   effects: Effect[] = [];
 }
 
-type ComponentFactoryFn<P> = {
+export type ComponentFactoryFn<P> = {
   (props: P, ...nodes: LwNode[]): ComponentElement<P>;
   (...nodes: LwNode[]): ComponentElement<P>;
 };

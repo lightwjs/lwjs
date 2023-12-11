@@ -1,8 +1,8 @@
 import { ComponentApi, ComponentElement, createElements } from "../elements";
 import { DomRenderer } from "./DomRenderer";
 
-export const createComponentElementDom = <Props>(
-  el: ComponentElement<Props>,
+export const createComponentElementDom = (
+  el: ComponentElement<any>,
   renderer: DomRenderer
 ) => {
   const api = new ComponentApi(el, renderer.reactiveContext);

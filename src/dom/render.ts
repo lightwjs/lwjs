@@ -1,6 +1,10 @@
 import { LwNode } from "../types";
-import { DomRenderer } from "./DomRenderer";
+import { DomRenderer, DomRendererOptions } from "./DomRenderer";
 
-export const render = (node: LwNode, container: HTMLElement) => {
-  new DomRenderer().render(node, container);
+export const render = (
+  node: LwNode,
+  container: HTMLElement,
+  options?: DomRendererOptions
+) => {
+  new DomRenderer(options).render(node, container);
 };

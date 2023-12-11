@@ -3,6 +3,7 @@ import {
   HeadElement,
   HtmlElement,
   ListElement,
+  OutletElement,
   ProviderElement,
   ReactiveElement,
   ShowElement,
@@ -11,7 +12,7 @@ import {
 import { Effect } from "../reactive";
 
 export interface BaseLwElement {
-  brand: Symbol;
+  brand: symbol;
   nextEl?: LwElement;
   nodes?: any[];
   parent?: LwElement;
@@ -27,4 +28,5 @@ export type LwElement =
   | ListElement<any>
   | ProviderElement<any>
   | ComponentElement<any>
-  | HeadElement;
+  | HeadElement
+  | OutletElement;

@@ -31,7 +31,10 @@
   "author": "Dusan Jovanov",
   "license": "MIT",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
     "csstype": "^3.1.2",
+    "eslint": "^8.55.0",
     "prettier": "2.8",
     "tsup": "^7.1.0",
     "typescript": "^5.1.6",

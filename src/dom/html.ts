@@ -96,9 +96,7 @@ export const setCssClass = (
       node.classList.remove(el.cls);
     }
     //
-    else {
-      return;
-    }
+    else return;
   }
 
   el.cls = className;

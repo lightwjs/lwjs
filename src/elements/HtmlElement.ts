@@ -18,4 +18,5 @@ export class HtmlElement implements BaseLwElement {
   parent?: LwElement;
   effects?: Effect[];
   isSvg;
+  cls?: string;
 }

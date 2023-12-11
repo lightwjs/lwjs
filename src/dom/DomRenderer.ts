@@ -1,7 +1,13 @@
 import { TYPE_MAP } from "../constants";
-import { HtmlElement, ProviderElement, createElements } from "../elements";
+import {
+  HtmlElement,
+  OutletElement,
+  ProviderElement,
+  createElements,
+} from "../elements";
 import { ReactiveContext } from "../reactive";
-import { LwElement, LwNode } from "../types";
+import { Router } from "../router";
+import { LwElement, LwNode, RouterConfig } from "../types";
 import { isLwObjectOfType } from "../utils";
 import { CssRenderer } from "./CssRenderer";
 import { createComponentElementDom } from "./component";
@@ -14,17 +20,20 @@ import { createTextElementDom } from "./text";
 import { DomNode } from "./types";
 
 export class DomRenderer {
-  constructor() {
+  constructor(options?: DomRendererOptions) {
     this.cssRenderer = new CssRenderer();
     this.reactiveContext = new ReactiveContext();
+    if (options?.routerConfig) {
+      this.router = new Router(options?.routerConfig);
+    }
   }
   cssRenderer;
   reactiveContext;
+  router;
 
   create(elements: LwElement[], parent: LwElement) {
     const domNodes: DomNode[] = [];
 
-    let result;
     const len = elements.length;
 
     for (let i = 0; i < len; i++) {
@@ -43,7 +52,7 @@ export class DomRenderer {
         el.htmlParent = parent.htmlParent;
       }
 
-      result = CREATE_EL_DOM_MAP[el.type](el as any, this);
+      CREATE_EL_DOM_MAP[el.type](el, this);
       domNodes.push(...(el.nodes ?? []));
     }
 
@@ -66,7 +75,7 @@ export class DomRenderer {
   }
 }
 
-const CREATE_EL_DOM_MAP = {
+const CREATE_EL_DOM_MAP: any = {
   [TYPE_MAP.html]: createHtmlElementDom,
   [TYPE_MAP.txt]: createTextElementDom,
   [TYPE_MAP.reactive]: createReactiveElementDom,
@@ -76,4 +85,11 @@ const CREATE_EL_DOM_MAP = {
     (el.nodes = renderer.create(el.children, el)),
   [TYPE_MAP.component]: createComponentElementDom,
   [TYPE_MAP.head]: createHeadElementDom,
+  [TYPE_MAP.outlet]: (el: OutletElement) => {
+    el.nodes = [el.type.toString()];
+  },
+};
+
+export type DomRendererOptions = {
+  routerConfig: RouterConfig;
 };
