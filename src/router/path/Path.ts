@@ -91,4 +91,4 @@ const throwIfSegments = (p: Path<any>) => {
     throw new Error("Path cannot be index, it already has segments");
 };
 
-export const path = <Params>() => new Path<Params>();
+export const path = <Params = void>() => new Path<Params>();
