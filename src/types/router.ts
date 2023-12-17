@@ -1,10 +1,10 @@
 import { ComponentFactoryFn } from "../elements";
-import { Path, RouterHistory } from "../router";
+import { Path, Router, RouterHistory } from "../router";
 
 export type RouterConfig = {
   /** Top level routes */
   routes: RouteConfig[];
-  createHistory: () => RouterHistory;
+  createHistory: (router: Router) => RouterHistory;
 };
 
 export type RouteConfig = {

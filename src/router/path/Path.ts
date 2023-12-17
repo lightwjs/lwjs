@@ -61,7 +61,7 @@ export class Path<Params = void> {
       .join("/");
   }
 
-  toHref(params: Params) {
+  toHref(params?: Params) {
     if (this.isIndex) return "/";
 
     return this.segments

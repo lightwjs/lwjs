@@ -8,7 +8,7 @@ import { RouterLocation, RouterNavigateOptions } from "./types";
 
 export class Router {
   constructor(config: RouterConfig, renderer: Renderer) {
-    this.history = config.createHistory();
+    this.history = config.createHistory(this);
     this.location = new Signal<RouterLocation>(
       {
         url: new URL(this.history.getCurrentUrl()),
@@ -22,13 +22,6 @@ export class Router {
       null,
       renderer.ctx
     );
-
-    window.addEventListener("popstate", (e) => {
-      this.location.value = {
-        url: new URL(this.history.getCurrentUrl()),
-        state: e.state,
-      };
-    });
 
     new Effect(() => {
       const result = matchRoutes(this.location.value.url.pathname, this.routes);
