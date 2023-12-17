@@ -21,18 +21,23 @@ export const createShowElementDom = (
       for (const el of elsToBeRemoved) {
         removeElement(el);
       }
-      const nodes = renderer.create(el.children, el);
-      const nextNode = findNextNode(el);
-      const domParent = getDomParent(el);
 
-      if (domParent) {
-        for (const n of nodes) {
-          domParent.insertBefore(n, nextNode ?? null);
+      if (el.children.length > 0) {
+        const nodes = renderer.create(el.children, el);
+        let nextNode = findNextNode(el);
+        const domParent = getDomParent(el);
+
+        if (!domParent.contains(nextNode)) nextNode = undefined;
+
+        if (domParent) {
+          for (const n of nodes) {
+            domParent.insertBefore(n, nextNode ?? null);
+          }
         }
       }
     }
     prevCond = cond;
-  }, renderer.reactiveContext);
+  }, renderer.ctx);
 
   el.nodes = renderer.create(el.children, el);
   el.effects = [eff];

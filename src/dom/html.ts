@@ -31,7 +31,7 @@ export const createHtmlElementDom = (
       if (isReactiveValue(value)) {
         const eff = new Effect(() => {
           setAttributeOrProp(el, dom, key, value.value, renderer);
-        }, renderer.reactiveContext);
+        }, renderer.ctx);
         if (!el.effects) el.effects = [];
         el.effects.push(eff);
       }

@@ -10,7 +10,7 @@ export const createReactiveElementDom = (
 
   const eff = new Effect(() => {
     node.textContent = el.reactive.value;
-  }, renderer.reactiveContext);
+  }, renderer.ctx);
 
   el.nodes = [node];
   el.effects = [eff];

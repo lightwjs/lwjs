@@ -1,5 +1,5 @@
 import { LwElement } from "../types";
-import { isParentElement } from "../utils";
+import { isLwObjectOfType, isParentElement } from "../utils";
 
 export const removeElement = (el: LwElement) => {
   if (el.nodes) {
@@ -17,6 +17,9 @@ export const removeElement = (el: LwElement) => {
   if (isParentElement(el)) {
     for (const child of el.children) {
       removeElement(child);
+    }
+    if (!isLwObjectOfType(el, "html") && el.nodes) {
+      el.nodes.length = 0;
     }
   }
 };

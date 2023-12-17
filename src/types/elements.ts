@@ -3,7 +3,6 @@ import {
   HeadElement,
   HtmlElement,
   ListElement,
-  OutletElement,
   ProviderElement,
   ReactiveElement,
   ShowElement,
@@ -28,5 +27,4 @@ export type LwElement =
   | ListElement<any>
   | ProviderElement<any>
   | ComponentElement<any>
-  | HeadElement
-  | OutletElement;
+  | HeadElement;

@@ -36,7 +36,7 @@ const handleCssObject = (cssObject: CSSObject, key?: string) => {
       continue;
     }
 
-    let k = key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+    const k = key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
 
     if (typeof v === "number") {
       v = `${v}px`;
@@ -50,7 +50,7 @@ const handleCssObject = (cssObject: CSSObject, key?: string) => {
 };
 
 const handleCssRules = (parentSelector: string, rules: RawRule[]) => {
-  let result: FinishedRule[] = [];
+  const result: FinishedRule[] = [];
 
   for (const rule of rules) {
     let selector;

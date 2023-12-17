@@ -11,7 +11,7 @@ export const createHeadElementDom = (
     if (isReactiveValue(el.props.text)) {
       const eff = new Effect(() => {
         document.title = el.props.text.value;
-      }, renderer.reactiveContext);
+      }, renderer.ctx);
       el.effects = [eff];
     }
     //
@@ -32,7 +32,7 @@ export const createHeadElementDom = (
       if (isReactiveValue(value)) {
         const eff = new Effect(() => {
           meta.setAttribute(key, value.value);
-        }, renderer.reactiveContext);
+        }, renderer.ctx);
         el.effects = [eff];
       }
       //

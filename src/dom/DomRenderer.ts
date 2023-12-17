@@ -1,13 +1,8 @@
 import { TYPE_MAP } from "../constants";
-import {
-  HtmlElement,
-  OutletElement,
-  ProviderElement,
-  createElements,
-} from "../elements";
+import { HtmlElement, ProviderElement, createElements } from "../elements";
 import { ReactiveContext } from "../reactive";
-import { Router } from "../router";
-import { LwElement, LwNode, RouterConfig } from "../types";
+import { Router, RouterContext } from "../router";
+import { LwElement, LwNode, Renderer, RouterConfig } from "../types";
 import { isLwObjectOfType } from "../utils";
 import { CssRenderer } from "./CssRenderer";
 import { createComponentElementDom } from "./component";
@@ -19,16 +14,16 @@ import { createShowElementDom } from "./show";
 import { createTextElementDom } from "./text";
 import { DomNode } from "./types";
 
-export class DomRenderer {
+export class DomRenderer implements Renderer {
   constructor(options?: DomRendererOptions) {
     this.cssRenderer = new CssRenderer();
-    this.reactiveContext = new ReactiveContext();
+    this.ctx = new ReactiveContext();
     if (options?.routerConfig) {
-      this.router = new Router(options?.routerConfig);
+      this.router = new Router(options.routerConfig, this);
     }
   }
   cssRenderer;
-  reactiveContext;
+  ctx;
   router;
 
   create(elements: LwElement[], parent: LwElement) {
@@ -69,7 +64,13 @@ export class DomRenderer {
     );
     containerEl.nodes = [container];
 
-    const domNodes = this.create(els, containerEl);
+    let rootEls = els;
+
+    if (this.router) {
+      rootEls = [RouterContext.provider({ value: this.router }, els)];
+    }
+
+    const domNodes = this.create(rootEls, containerEl);
 
     container.append(...domNodes);
   }
@@ -85,9 +86,6 @@ const CREATE_EL_DOM_MAP: any = {
     (el.nodes = renderer.create(el.children, el)),
   [TYPE_MAP.component]: createComponentElementDom,
   [TYPE_MAP.head]: createHeadElementDom,
-  [TYPE_MAP.outlet]: (el: OutletElement) => {
-    el.nodes = [el.type.toString()];
-  },
 };
 
 export type DomRendererOptions = {

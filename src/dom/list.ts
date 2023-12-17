@@ -32,7 +32,7 @@ export const createListElementDom = <Item>(
     el.arr.value;
     if (!didInit) return;
     patchList(el, renderer);
-  }, renderer.reactiveContext);
+  }, renderer.ctx);
 
   didInit = true;
 
@@ -46,7 +46,7 @@ const createListItem = <Item>(
   el: ListElement<Item>,
   renderer: DomRenderer
 ): ListCacheItem => {
-  const index = new Signal(i, renderer.reactiveContext);
+  const index = new Signal(i, renderer.ctx);
   const els = createElements(el.renderItem(item, index));
   const nodes = renderer.create(els, el);
   return {
