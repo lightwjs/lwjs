@@ -10,16 +10,16 @@ import {
   createElements,
 } from "../elements";
 import { ReactiveContext, Signal } from "../reactive";
-import { LwElement, LwNode } from "../types";
+import { LwElement, LwNode, Renderer } from "../types";
 import { CssRenderer } from "./CssRenderer";
 import { htmlElToString } from "./html";
 
-export class SsrRenderer {
+export class SsrRenderer implements Renderer {
   constructor() {
-    this.reactiveContext = new ReactiveContext();
+    this.ctx = new ReactiveContext();
     this.cssRenderer = new CssRenderer();
   }
-  reactiveContext;
+  ctx;
   cssRenderer;
 
   create(elements: LwElement[]): string {
@@ -37,10 +37,10 @@ export class SsrRenderer {
 }
 
 const listElToString = <Item>(el: ListElement<Item>, renderer: SsrRenderer) => {
-  let len = el.arr.value.length;
+  const len = el.arr.value.length;
   for (let i = 0; i < len; i++) {
     const item = el.arr.value[i];
-    const index = new Signal(i, renderer.reactiveContext);
+    const index = new Signal(i, renderer.ctx);
     const els = createElements(el.renderItem(item, index));
     el.children.push(...els);
   }
@@ -57,7 +57,7 @@ const CREATE_EL_DOM_MAP = {
   [TYPE_MAP.provider]: (el: ProviderElement<any>, renderer: SsrRenderer) =>
     renderer.create(el.children),
   [TYPE_MAP.component]: (el: ComponentElement<any>, renderer: SsrRenderer) => {
-    const api = new ComponentApi(el, renderer.reactiveContext);
+    const api = new ComponentApi(el, renderer);
     const els = createElements(el.render(api));
     return renderer.create(els);
   },

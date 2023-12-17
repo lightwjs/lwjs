@@ -1,9 +1,9 @@
 import { createContext } from "../elements";
 import { Effect, Signal } from "../reactive";
 import { Renderer, RouteConfig, RouterConfig } from "../types";
-import { matchRoutes } from "./matchRoutes";
-import { comparePaths } from "./path";
 import { Route } from "./Route";
+import { compareRoutes } from "./compareRoutes";
+import { matchRoutes } from "./matchRoutes";
 import { RouterLocation, RouterNavigateOptions } from "./types";
 
 export class Router {
@@ -39,7 +39,7 @@ export class Router {
   createRoutes(routesConfig: RouteConfig[]) {
     return routesConfig
       .map((rc, index) => new Route(rc, index, this))
-      .sort((a, b) => comparePaths(a.path, b.path));
+      .sort(compareRoutes);
   }
 
   navigate(path: string, options?: RouterNavigateOptions) {

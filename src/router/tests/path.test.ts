@@ -1,6 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { path } from "./Path";
-import { comparePaths } from "./comparePaths";
+import { path } from "../PathConfig";
 
 describe("path", () => {
   test("index path", () => {
@@ -43,15 +42,5 @@ describe("path", () => {
 
     const p3 = path().static("users").wildcard();
     expect(String(p3)).equal("users/*");
-  });
-
-  test("compare", () => {
-    const index = path().index();
-    const static1 = path().static("users");
-    const staticVar1 = path().static("users").param("id");
-
-    expect(comparePaths(index, static1)).toBeLessThan(0);
-    expect(comparePaths(index, staticVar1)).toBeLessThan(0);
-    expect(comparePaths(staticVar1, static1)).toBeLessThan(0);
   });
 });

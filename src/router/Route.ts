@@ -1,36 +1,44 @@
-import { createContext, show } from "../elements";
+import { ComponentApi, createContext, show } from "../elements";
 import { Computed } from "../reactive";
 import { RouteConfig } from "../types";
 import { Router } from "./Router";
-import { RouteMatch } from "./types";
 
 export class Route {
-  constructor(config: RouteConfig, index: number, router: Router) {
+  constructor(config: RouteConfig, originalIndex: number, router: Router) {
     this.path = config.path;
-    this.path.routeIndex = index;
+    this.originalIndex = originalIndex;
     this.component = config.component;
     this.router = router;
-    this.match = new Computed<RouteMatch | null>(() => {
+    this.params = new Computed(() => {
       const routerMatch = router.match.value;
-      if (routerMatch && routerMatch.route === this)
-        return {
-          params: routerMatch.params,
-        };
-
+      if (routerMatch && routerMatch.route === this) return routerMatch.params;
       return null;
     }, router.renderer.ctx);
   }
   path;
   component;
-  match;
+  params;
   router;
+  originalIndex;
 
   render() {
     return RouteContext.provider(
-      { value: {} },
-      show(this.match, this.component())
+      {
+        value: {
+          params: this.params,
+        },
+      },
+      show(this.params, this.component())
     );
   }
 }
 
-export const RouteContext = createContext();
+export const RouteContext = createContext<RouteContextValue>();
+
+type RouteContextValue = {
+  params: Computed<Record<string, any>>;
+};
+
+export const getParams = <Params extends Record<string, any>>(
+  $: ComponentApi<any>
+) => $.getContext(RouteContext).params as Computed<Params>;

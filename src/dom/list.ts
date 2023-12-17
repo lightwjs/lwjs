@@ -98,6 +98,7 @@ const patchList = <Item>(el: ListElement<Item>, renderer: DomRenderer) => {
   else {
     const newCache: ListElementCache<Item> = new Map();
     const toBeInserted: ListInsertSegment[] = [];
+    el.children = [];
 
     const addToInsert = (cacheItem: ListCacheItem) => {
       const last = toBeInserted.at(-1);
@@ -131,10 +132,12 @@ const patchList = <Item>(el: ListElement<Item>, renderer: DomRenderer) => {
           addToInsert(oldCacheItem);
         }
         newCache.set(item, oldCacheItem);
+        el.children.push(...oldCacheItem.els);
       }
       // new item
       else {
         const cacheItem = createListItem(item, i, el, renderer);
+        el.children.push(...cacheItem.els);
         newCache.set(item, cacheItem);
         addToInsert(cacheItem);
       }

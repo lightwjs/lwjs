@@ -1,13 +1,11 @@
-import { ParamSegmentOptions, Segment } from "../types";
+import { ParamSegmentOptions, Segment } from "./types";
 
-export class Path<Params = void> {
+export class PathConfig<Params = void> {
   constructor(segments: Segment[] = []) {
     this.segments = segments;
   }
-
   isIndex = false;
   hasWildcard = false;
-  routeIndex = 0;
   segments;
 
   index() {
@@ -78,17 +76,17 @@ export class Path<Params = void> {
   }
 }
 
-const throwIfIndex = (p: Path<any>) => {
+const throwIfIndex = (p: PathConfig<any>) => {
   if (p.isIndex) throw new Error(`Cannot extend index path`);
 };
 
-const throwIfWildcard = (p: Path<any>) => {
+const throwIfWildcard = (p: PathConfig<any>) => {
   if (p.hasWildcard) throw new Error(`Cannot extend wildcard path`);
 };
 
-const throwIfSegments = (p: Path<any>) => {
+const throwIfSegments = (p: PathConfig<any>) => {
   if (p.segments.length > 0)
     throw new Error("Path cannot be index, it already has segments");
 };
 
-export const path = <Params = void>() => new Path<Params>();
+export const path = <Params = void>() => new PathConfig<Params>();

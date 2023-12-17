@@ -1,5 +1,5 @@
 import { ComponentFactoryFn } from "../elements";
-import { Path, Router, RouterHistory } from "../router";
+import { PathConfig, Router, RouterHistory } from "../router";
 
 export type RouterConfig = {
   /** Top level routes */
@@ -8,7 +8,7 @@ export type RouterConfig = {
 };
 
 export type RouteConfig = {
-  path: Path<any>;
+  path: PathConfig<any>;
   /** Component to render when Route is matched */
   component: ComponentFactoryFn<any>;
 };
