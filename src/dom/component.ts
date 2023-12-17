@@ -7,5 +7,5 @@ export const createComponentElementDom = (
 ) => {
   const api = new ComponentApi(el, renderer.ctx);
   el.children = createElements(el.render(api));
-  el.nodes = renderer.create(el.children, el);
+  return renderer.create(el.children, el);
 };

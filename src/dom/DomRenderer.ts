@@ -47,8 +47,8 @@ export class DomRenderer implements Renderer {
         el.htmlParent = parent.htmlParent;
       }
 
-      CREATE_EL_DOM_MAP[el.type](el, this);
-      domNodes.push(...(el.nodes ?? []));
+      const nodes = CREATE_EL_DOM_MAP[el.type](el, this);
+      domNodes.push(...nodes);
     }
 
     return domNodes;
@@ -83,7 +83,7 @@ const CREATE_EL_DOM_MAP: any = {
   [TYPE_MAP.show]: createShowElementDom,
   [TYPE_MAP.list]: createListElementDom,
   [TYPE_MAP.provider]: (el: ProviderElement<any>, renderer: DomRenderer) =>
-    (el.nodes = renderer.create(el.children, el)),
+    renderer.create(el.children, el),
   [TYPE_MAP.component]: createComponentElementDom,
   [TYPE_MAP.head]: createHeadElementDom,
 };

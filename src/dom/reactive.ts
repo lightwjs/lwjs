@@ -6,12 +6,13 @@ export const createReactiveElementDom = (
   el: ReactiveElement,
   renderer: DomRenderer
 ) => {
-  const node = document.createTextNode(el.reactive.value);
+  const txt = document.createTextNode(el.reactive.value);
+  el.node = txt;
 
   const eff = new Effect(() => {
-    node.textContent = el.reactive.value;
+    txt.textContent = el.reactive.value;
   }, renderer.ctx);
 
-  el.nodes = [node];
   el.effects = [eff];
+  return [txt];
 };

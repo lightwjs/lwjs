@@ -42,7 +42,7 @@ export const createHtmlElementDom = (
     }
   }
 
-  return dom;
+  return [dom];
 };
 
 export const setAttributeOrProp = (

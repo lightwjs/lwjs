@@ -35,9 +35,9 @@ export const createListElementDom = <Item>(
   }, renderer.ctx);
 
   didInit = true;
-
-  el.nodes = renderer.create(el.children, el);
   el.effects = [eff];
+
+  return renderer.create(el.children, el);
 };
 
 const createListItem = <Item>(
@@ -66,20 +66,20 @@ const patchList = <Item>(el: ListElement<Item>, renderer: DomRenderer) => {
   // fast path for prev empty
   if (oldLen === 0) {
     const newCache = new Map();
-    el.nodes = [];
+    const nodes = [];
     el.children = [];
     for (let i = 0; i < newLen; i++) {
       const item = newArr[i];
       const cacheItem = createListItem(item, i, el, renderer);
       newCache.set(item, cacheItem);
-      el.nodes.push(...cacheItem.nodes);
+      nodes.push(...cacheItem.nodes);
     }
     const domParent = getDomParent(el);
 
     if (domParent) {
       const nextNode = findNextNode(el);
 
-      for (const node of el.nodes) {
+      for (const node of nodes) {
         domParent.insertBefore(node, nextNode ?? null);
       }
     }
@@ -98,14 +98,12 @@ const patchList = <Item>(el: ListElement<Item>, renderer: DomRenderer) => {
   else {
     const newCache: ListElementCache<Item> = new Map();
     const toBeInserted: ListInsertSegment[] = [];
-    el.nodes = [];
 
     const addToInsert = (cacheItem: ListCacheItem) => {
       const last = toBeInserted.at(-1);
       const index = cacheItem.index.value;
 
       const nodes = cacheItem.nodes;
-      el.nodes?.push(...nodes);
 
       if (last?.start === index - 1) {
         const insertSeg = toBeInserted.at(-1)!;
@@ -131,10 +129,6 @@ const patchList = <Item>(el: ListElement<Item>, renderer: DomRenderer) => {
         if (oldCacheItem.index.value !== i) {
           oldCacheItem.index.value = i;
           addToInsert(oldCacheItem);
-        }
-        //
-        else {
-          el.nodes.push(...oldCacheItem.nodes);
         }
         newCache.set(item, oldCacheItem);
       }

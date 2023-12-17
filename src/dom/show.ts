@@ -24,10 +24,8 @@ export const createShowElementDom = (
 
       if (el.children.length > 0) {
         const nodes = renderer.create(el.children, el);
-        let nextNode = findNextNode(el);
+        const nextNode = findNextNode(el);
         const domParent = getDomParent(el);
-
-        if (!domParent.contains(nextNode)) nextNode = undefined;
 
         if (domParent) {
           for (const n of nodes) {
@@ -39,6 +37,6 @@ export const createShowElementDom = (
     prevCond = cond;
   }, renderer.ctx);
 
-  el.nodes = renderer.create(el.children, el);
   el.effects = [eff];
+  return renderer.create(el.children, el);
 };
