@@ -29,9 +29,9 @@ export const createHtmlElementDom = (
     //
     else {
       if (isReactiveValue(value)) {
-        const eff = new Effect(() => {
+        const eff = new Effect([value], () => {
           setAttributeOrProp(el, dom, key, value.value, renderer);
-        }, renderer.ctx);
+        });
         if (!el.effects) el.effects = [];
         el.effects.push(eff);
       }
@@ -91,14 +91,9 @@ export const setCssClass = (
 ) => {
   const className = renderer.cssRenderer.getCssClass(value);
 
-  if (el.cls) {
-    if (el.cls !== className) {
-      node.classList.remove(el.cls);
-    }
-    //
-    else return;
+  if (el.cls && el.cls !== className) {
+    node.classList.remove(el.cls);
   }
-
   el.cls = className;
   node.classList.add(className);
 };

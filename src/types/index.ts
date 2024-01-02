@@ -5,6 +5,5 @@ export * from "./events";
 export * from "./html";
 export * from "./internal";
 export * from "./nodes";
-export * from "./router";
 export * from "./shared";
 export * from "./svg";

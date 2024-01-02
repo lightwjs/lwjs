@@ -1,8 +1,7 @@
 import { TYPE_MAP } from "../constants";
 import { HtmlElement, ProviderElement, createElements } from "../elements";
-import { ReactiveContext } from "../reactive";
-import { Router, RouterContext } from "../router";
-import { LwElement, LwNode, Renderer, RouterConfig } from "../types";
+import { Router, RouterConfig, RouterContext } from "../router";
+import { LwElement, LwNode, Renderer } from "../types";
 import { isLwObjectOfType } from "../utils";
 import { CssRenderer } from "./CssRenderer";
 import { createComponentElementDom } from "./component";
@@ -17,13 +16,11 @@ import { DomNode } from "./types";
 export class DomRenderer implements Renderer {
   constructor(options?: DomRendererOptions) {
     this.cssRenderer = new CssRenderer();
-    this.ctx = new ReactiveContext();
     if (options?.routerConfig) {
       this.router = new Router(options.routerConfig, this);
     }
   }
   cssRenderer;
-  ctx;
   router;
 
   create(elements: LwElement[], parent: LwElement) {

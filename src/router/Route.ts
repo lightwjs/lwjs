@@ -1,44 +1,50 @@
-import { ComponentApi, createContext, show } from "../elements";
-import { Computed } from "../reactive";
-import { RouteConfig } from "../types";
-import { Router } from "./Router";
+import { createContext, getContext, show } from "../elements";
+import { State } from "../reactive";
+import { LwNode } from "../types";
+import { Outlet } from "./Outlet";
+import { RouteConfig } from "./types";
 
 export class Route {
-  constructor(config: RouteConfig, originalIndex: number, router: Router) {
-    this.path = config.path;
-    this.originalIndex = originalIndex;
-    this.component = config.component;
-    this.router = router;
-    this.params = new Computed(() => {
-      const routerMatch = router.match.value;
-      if (routerMatch && routerMatch.route === this) return routerMatch.params;
-      return null;
-    }, router.renderer.ctx);
+  constructor(key: string, route: RouteConfig) {
+    this.key = key;
+    this.isParam = this.key.indexOf(":") === 0;
+    this.renderFn = route.render ?? defaultRenderFn;
+    this.isMatch = new State(key === "root");
+    this.params = new State<Record<string, string> | undefined>(
+      key === "root" ? {} : undefined
+    );
+    if (route.routes) {
+      const keys = Object.keys(route.routes);
+      this.routes = keys.map((key) => new Route(key, route.routes![key]));
+    }
   }
-  path;
-  component;
+  key;
+  renderFn;
+  isMatch;
   params;
-  router;
-  originalIndex;
+  isParam;
+  routes: Route[] = [];
 
-  render() {
+  render(): LwNode {
     return RouteContext.provider(
       {
         value: {
+          route: this,
           params: this.params,
         },
       },
-      show(this.params, this.component())
+      show(this.isMatch, this.renderFn())
     );
   }
 }
 
+const defaultRenderFn = () => Outlet();
+
 export const RouteContext = createContext<RouteContextValue>();
 
-type RouteContextValue = {
-  params: Computed<Record<string, any>>;
-};
+export const getParams = () => getContext(RouteContext).params;
 
-export const getParams = <Params extends Record<string, any>>(
-  $: ComponentApi<any>
-) => $.getContext(RouteContext).params as Computed<Params>;
+type RouteContextValue = {
+  route: Route;
+  params: State<Record<string, string> | undefined>;
+};

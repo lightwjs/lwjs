@@ -3,20 +3,18 @@
  */
 import { describe, expect, test } from "vitest";
 import { h, list } from "../../elements";
-import { Signal } from "../../reactive";
-import { DomRenderer } from "../DomRenderer";
+import { State } from "../../reactive";
+import { render } from "../render";
 
 describe("dom list", () => {
   test("basic", () => {
     const container = document.createElement("div");
 
-    const renderer = new DomRenderer();
-
     const initialItems = [{ name: "a" }, { name: "b" }];
 
-    const items = new Signal(initialItems, renderer.ctx);
+    const items = new State(initialItems);
 
-    renderer.render(
+    render(
       list(items, (item) => h("li", item.name)),
       container
     );

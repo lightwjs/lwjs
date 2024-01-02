@@ -2,7 +2,6 @@ import { LW_EL_SYMBOL, TYPE_MAP } from "../constants";
 import { Effect } from "../reactive";
 import { BaseLwElement, LwElement, LwNode } from "../types";
 import { handlePropsArg } from "../utils";
-import { ComponentApi } from "./ComponentApi";
 import { HtmlElement } from "./HtmlElement";
 import { createElements } from "./createElements";
 
@@ -41,4 +40,4 @@ export const component =
 
 type ComponentProps<P> = P & { children: LwElement[] };
 
-type ComponentRenderFn<Props = void> = (api: ComponentApi<Props>) => LwNode;
+type ComponentRenderFn<Props = void> = (props: ComponentProps<Props>) => LwNode;

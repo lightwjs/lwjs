@@ -1,17 +1,13 @@
 import { HeadElement } from "../elements";
 import { Effect } from "../reactive";
 import { isReactiveValue } from "../utils";
-import { DomRenderer } from "./DomRenderer";
 
-export const createHeadElementDom = (
-  el: HeadElement,
-  renderer: DomRenderer
-) => {
+export const createHeadElementDom = (el: HeadElement) => {
   if (el.tag === "title") {
     if (isReactiveValue(el.props.text)) {
-      const eff = new Effect(() => {
+      const eff = new Effect([el.props.text], () => {
         document.title = el.props.text.value;
-      }, renderer.ctx);
+      });
       el.effects = [eff];
     }
     //
@@ -30,9 +26,9 @@ export const createHeadElementDom = (
     for (const key of keys) {
       const value = el.props[key];
       if (isReactiveValue(value)) {
-        const eff = new Effect(() => {
+        const eff = new Effect([value], () => {
           meta.setAttribute(key, value.value);
-        }, renderer.ctx);
+        });
         el.effects = [eff];
       }
       //

@@ -1,11 +1,13 @@
-import { ComponentApi, ComponentElement, createElements } from "../elements";
+import { activeComponent } from "../activeComponent";
+import { ComponentElement, createElements } from "../elements";
 import { DomRenderer } from "./DomRenderer";
 
 export const createComponentElementDom = (
   el: ComponentElement<any>,
   renderer: DomRenderer
 ) => {
-  const api = new ComponentApi(el, renderer);
-  el.children = createElements(el.render(api));
+  activeComponent.set(el);
+  el.children = createElements(el.render(el.props));
+  activeComponent.set(undefined);
   return renderer.create(el.children, el);
 };

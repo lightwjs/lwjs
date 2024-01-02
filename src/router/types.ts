@@ -1,30 +1,11 @@
+import { LwNode } from "../types";
+import { Route } from "./Route";
+import { Router } from "./Router";
+
 export type RouterNavigateOptions<State = any> = {
   state?: State;
   replace?: boolean;
 };
-
-export type StaticSegment = {
-  type: "static";
-  path: string;
-};
-
-export type ParamSegment = {
-  type: "param";
-  name: string;
-  transform?: (value: string) => any;
-  isMatch?: (value: any) => boolean;
-};
-
-export type ParamSegmentOptions<Value> = {
-  transform?: (value: string) => Value;
-  isMatch?: (value: Value) => boolean;
-};
-
-export type WildcardSegment = {
-  type: "wildcard";
-};
-
-export type Segment = StaticSegment | ParamSegment | WildcardSegment;
 
 export type RouterLocation = {
   url: URL;
@@ -37,6 +18,18 @@ export interface RouterHistory {
   replace: (location: RouterLocation) => void;
 }
 
+export type RouterConfig = {
+  /** Top level routes */
+  root: RouteConfig;
+  createHistory: (router: Router) => RouterHistory;
+};
+
+export type RouteConfig = {
+  render?: () => LwNode;
+  routes?: Record<string, RouteConfig>;
+};
+
 export type RouteMatch = {
-  params: Record<string, any>;
+  route: Route;
+  param: string | undefined;
 };

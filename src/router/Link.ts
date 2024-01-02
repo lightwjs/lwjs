@@ -1,4 +1,4 @@
-import { component, h } from "../elements";
+import { component, getContext, h } from "../elements";
 import { HTMLAnchorElementProps } from "../types";
 import { RouterContext } from "./Router";
 import { RouterNavigateOptions } from "./types";
@@ -7,21 +7,22 @@ export type LinkProps = HTMLAnchorElementProps & {
   path: string;
 } & RouterNavigateOptions;
 
-export const Link = component<LinkProps>(($) => {
-  const router = $.getContext(RouterContext);
+export const Link = component<LinkProps>(
+  ({ path, replace, state, children, ...anchorProps }) => {
+    const router = getContext(RouterContext);
 
-  const { path, replace, state, ...anchorProps } = $.props;
-
-  return h(
-    "a",
-    {
-      ...anchorProps,
-      href: $.props.path,
-      onClick: (e) => {
-        e.preventDefault();
-        router.navigate(path, { replace, state });
+    return h(
+      "a",
+      {
+        ...anchorProps,
+        href: path,
+        onClick: (e) => {
+          e.preventDefault();
+          router.navigate(path, { replace, state });
+          anchorProps.onClick?.(e);
+        },
       },
-    },
-    $.props.children
-  );
-});
+      children
+    );
+  }
+);

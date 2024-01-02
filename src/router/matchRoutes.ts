@@ -1,68 +1,35 @@
 import { Route } from "./Route";
+import { RouteMatch } from "./types";
 
-export const matchRoutes = (path: string, routes: Route[]) => {
-  const parts = getPathParts(path);
+export const matchRoutes = (parts: string[], routes: Route[]) => {
+  const part = parts[0];
+  const matchedRoutes: RouteMatch[] = [];
 
   for (const route of routes) {
-    // check is index path
-    if (path === "/") {
-      if (route.path.isIndex) {
-        return {
-          route,
-        };
-      }
-    }
+    let isMatch = false;
+    let param: string | undefined;
 
-    const partsLength = parts.length;
-
-    // check length of path
-    if (partsLength > route.path.segments.length) {
-      continue;
-    }
-
-    // check segments
-    const params: Record<string, any> = {};
-    let isMatch = true;
-
-    for (let i = 0; i < partsLength; i++) {
-      const p = parts[i];
-      const seg = route.path.segments[i];
-
-      if (seg.type === "static" && seg.path !== p) {
-        isMatch = false;
-        break;
+    if (part) {
+      if (route.isParam) {
+        isMatch = true;
+        param = part;
       }
       //
-      if (seg.type === "param") {
-        const transformedValue = seg.transform ? seg.transform(p) : p;
-        let isValid = true;
-        if (typeof seg.isMatch === "function") {
-          isValid = seg.isMatch(transformedValue);
-        }
-        if (!isValid) {
-          isMatch = false;
-          break;
-        }
-        params[seg.name] = transformedValue;
+      else {
+        isMatch = route.key === part;
       }
     }
 
     if (isMatch) {
-      return {
-        route,
-        params,
-      };
+      matchedRoutes.push(
+        {
+          route,
+          param,
+        },
+        ...matchRoutes(parts.slice(1), route.routes)
+      );
     }
   }
-};
 
-const getPathParts = (path: string) => {
-  let parts = path.split("/").filter(Boolean);
-
-  // remove leading slash
-  if (parts[0] === "/") {
-    parts = parts.slice(1);
-  }
-
-  return parts;
+  return matchedRoutes;
 };

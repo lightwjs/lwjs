@@ -1,5 +1,5 @@
 import { LW_EL_SYMBOL, TYPE_MAP } from "../constants";
-import { Effect, ReactiveValue, Signal } from "../reactive";
+import { Effect, ReactiveValue, State } from "../reactive";
 import { BaseLwElement, LwElement, LwNode } from "../types";
 import { HtmlElement } from "./HtmlElement";
 
@@ -29,7 +29,7 @@ export const list = <Item>(
 
 type ListElementRenderItemFn<Item> = (
   item: Item,
-  index: Signal<number>
+  index: State<number>
 ) => LwNode;
 
 export type ListElementCache<Item> = Map<Item, ListCacheItem>;
@@ -37,5 +37,5 @@ export type ListElementCache<Item> = Map<Item, ListCacheItem>;
 export type ListCacheItem = {
   els: LwElement[];
   nodes: any[];
-  index: Signal<number>;
+  index: State<number>;
 };

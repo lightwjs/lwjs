@@ -1,3 +1,4 @@
+/* eslint-disable */
 // taken from https://github.com/emotion-js/emotion/tree/main/packages/hash
 
 export const hash = (str: string) => {

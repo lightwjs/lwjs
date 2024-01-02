@@ -3,13 +3,12 @@ import {
   HeadElement,
   HtmlElement,
   ListElement,
-  OutletElement,
   ProviderElement,
   ReactiveElement,
   ShowElement,
   TextElement,
 } from "../elements";
-import { Computed, Effect, Signal } from "../reactive";
+import { Computed, Effect, State } from "../reactive";
 
 export const TYPE_MAP = {
   txt: Symbol.for("lw-text"),
@@ -20,8 +19,7 @@ export const TYPE_MAP = {
   provider: Symbol.for("lw-provider"),
   component: Symbol.for("lw-component"),
   head: Symbol.for("lw-head"),
-  outlet: Symbol.for("lw-outlet"),
-  signal: Symbol.for("lw-signal"),
+  state: Symbol.for("lw-state"),
   computed: Symbol.for("lw-computed"),
   effect: Symbol.for("lw-effect"),
 };
@@ -35,8 +33,7 @@ export type TypeMap = {
   provider: ProviderElement<any>;
   component: ComponentElement<any>;
   head: HeadElement;
-  outlet: OutletElement;
-  signal: Signal;
-  computed: Computed;
+  state: State<any>;
+  computed: Computed<any>;
   effect: Effect;
 };

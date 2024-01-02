@@ -1,27 +1,26 @@
+import { activeComponent } from "../activeComponent";
 import { TYPE_MAP } from "../constants";
-import { ReactiveContext } from "./ReactiveContext";
-import { Subs } from "./types";
+import { Dep, EffectCleanupFn, EffectFn, EffectOptions } from "./types";
 
 export class Effect {
-  constructor(fn: EffectFn, ctx: ReactiveContext, options?: EffectOptions) {
+  constructor(deps: Dep[], fn: EffectFn, options?: EffectOptions) {
+    this.deps = deps;
     this.fn = fn;
-    this.ctx = ctx;
     this.timing = options?.timing ?? "sync";
+
+    deps.forEach((d) => d.subscribe(this));
 
     this.scheduledRun();
   }
   type = TYPE_MAP.effect;
+  deps;
   fn;
   cleanup: EffectCleanupFn | undefined;
-  subs: Subs[] = [];
   timing;
-  ctx;
 
   run() {
     if (this.cleanup) this.cleanup();
-    this.ctx.currentSub = this;
     this.cleanup = this.fn();
-    this.ctx.currentSub = null;
   }
 
   scheduledRun() {
@@ -39,18 +38,17 @@ export class Effect {
   }
 
   dispose() {
-    if (this.cleanup) this.cleanup();
-    for (const subs of this.subs) {
-      subs.delete(this);
+    this.cleanup?.();
+    for (const dep of this.deps) {
+      dep.subs.delete(this);
     }
-    this.subs.length = 0;
+    this.deps.length = 0;
   }
 }
 
-export type EffectOptions = {
-  timing?: "sync" | "afterPaint";
+export const effect = (deps: Dep[], fn: EffectFn, options?: EffectOptions) => {
+  const el = activeComponent.get();
+  const eff = new Effect(deps, fn, { timing: "afterPaint", ...options });
+
+  if (el) el.effects.push(eff);
 };
-
-export type EffectFn = () => any | EffectCleanupFn;
-
-type EffectCleanupFn = () => any;

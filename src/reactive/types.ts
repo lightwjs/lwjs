@@ -1,9 +1,19 @@
 import { Computed } from "./Computed";
 import { Effect } from "./Effect";
-import { Signal } from "./Signal";
+import { State } from "./State";
 
-export type Sub = Computed | Effect;
+export type Sub = Computed<any> | Effect;
 
 export type Subs = Set<Sub>;
 
-export type ReactiveValue<Value = any> = Signal<Value> | Computed<Value>;
+export type ReactiveValue<Value = any> = State<Value> | Computed<Value>;
+
+export type EffectOptions = {
+  timing?: "sync" | "afterPaint";
+};
+
+export type EffectFn = () => any | EffectCleanupFn;
+
+export type EffectCleanupFn = () => any;
+
+export type Dep = State<any> | Computed<any>;

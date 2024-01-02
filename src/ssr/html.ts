@@ -51,7 +51,7 @@ export const styleObjectToString = (obj: CSSProperties) => {
   for (const key of keys) {
     let v = obj[key];
 
-    let k = key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+    const k = key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
 
     if (typeof v === "number") {
       v = `${v}px`;

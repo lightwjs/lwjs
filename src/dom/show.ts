@@ -11,7 +11,7 @@ export const createShowElementDom = (
 ) => {
   let prevCond: boolean | undefined;
 
-  const eff = new Effect(() => {
+  const eff = new Effect([el.reactive], () => {
     const cond = !!el.reactive.value;
 
     el.children = cond ? el.yesElements : el.noElements;
@@ -35,7 +35,7 @@ export const createShowElementDom = (
       }
     }
     prevCond = cond;
-  }, renderer.ctx);
+  });
 
   el.effects = [eff];
   return renderer.create(el.children, el);
