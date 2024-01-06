@@ -1,24 +1,15 @@
 import { createContext } from "../elements";
 import { Effect, State } from "../reactive";
-import { Renderer } from "../types";
 import { Route } from "./Route";
+import { getPathParts } from "./getPathParts";
 import { matchRoutes } from "./matchRoutes";
-import {
-  RouteMatch,
-  RouterConfig,
-  RouterLocation,
-  RouterNavigateOptions,
-} from "./types";
+import { RouteMatch, RouterConfig, RouterNavigateOptions, To } from "./types";
 
 export class Router {
-  constructor(config: RouterConfig, renderer: Renderer) {
+  constructor(config: RouterConfig) {
     this.root = new Route("root", config.root);
-    this.history = config.createHistory(this);
-    this.location = new State<RouterLocation>({
-      url: new URL(this.history.getCurrentUrl()),
-      state: history.state,
-    });
-    this.renderer = renderer;
+    this.history = config.history;
+    this.location = new State(this.history.location);
 
     new Effect([this.location], () => {
       const parts = getPathParts(this.location.value.url.pathname);
@@ -62,35 +53,19 @@ export class Router {
   }
   root;
   location;
-  renderer;
   history;
   matchedRoutes: RouteMatch[] = [];
 
-  navigate(path: string, options?: RouterNavigateOptions) {
-    const newUrl = new URL(this.location.value.url);
-    newUrl.pathname = path;
-    this.location.value = {
-      url: newUrl,
-      state: options?.state,
-    };
+  navigate(to: To, options?: RouterNavigateOptions) {
     if (options?.replace) {
-      this.history.replace(this.location.value);
+      this.history.replace(this.location.value, options.state);
     }
     //
     else {
-      this.history.push(this.location.value);
+      this.history.push(this.location.value, options?.state);
     }
   }
 }
-
-const getPathParts = (path: string) => {
-  let parts = path.split("/").filter(Boolean);
-  // remove leading slash
-  if (parts[0] === "/") {
-    parts = parts.slice(1);
-  }
-  return parts;
-};
 
 export const RouterContext = createContext<Router>();
 

@@ -1,6 +1,6 @@
 import { TYPE_MAP } from "../constants";
 import { HtmlElement, ProviderElement, createElements } from "../elements";
-import { Router, RouterConfig, RouterContext } from "../router";
+import { Router, RouterContext } from "../router";
 import { LwElement, LwNode, Renderer } from "../types";
 import { isLwObjectOfType } from "../utils";
 import { CssRenderer } from "./CssRenderer";
@@ -16,9 +16,7 @@ import { DomNode } from "./types";
 export class DomRenderer implements Renderer {
   constructor(options?: DomRendererOptions) {
     this.cssRenderer = new CssRenderer();
-    if (options?.routerConfig) {
-      this.router = new Router(options.routerConfig, this);
-    }
+    this.router = options?.router;
   }
   cssRenderer;
   router;
@@ -86,5 +84,5 @@ const CREATE_EL_DOM_MAP: any = {
 };
 
 export type DomRendererOptions = {
-  routerConfig: RouterConfig;
+  router?: Router;
 };
