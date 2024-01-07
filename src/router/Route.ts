@@ -1,4 +1,3 @@
-import { component, createContext, show } from "../elements";
 import { Computed } from "../reactive";
 import { LwNode } from "../types";
 import { Path } from "./Path";
@@ -11,15 +10,8 @@ export class Route<Params = void> {
   path;
   node: LwNode;
 
-  toRender(node: LwNode) {
+  setNode(node: LwNode) {
     this.node = node;
-  }
-
-  render() {
-    return RouteContext.provider(
-      { value: this },
-      RouteComponent({ route: this })
-    );
   }
 
   getParams() {
@@ -38,14 +30,6 @@ export class Route<Params = void> {
     return this.path.toHref(params);
   }
 }
-
-const RouteContext = createContext<Route<any>>();
-
-const RouteComponent = component<{ route: Route }>(({ route }) => {
-  const router = getRouterContext();
-
-  return show(router.matches.get(route)!, route.node);
-});
 
 type RouteOptions<Params> = {
   path: (p: Path<Params>) => Path<Params>;

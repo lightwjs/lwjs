@@ -1,9 +1,9 @@
 import { HtmlElement } from "../elements";
 import { CSSProperties } from "../types";
 import { isEventProp, isReactiveValue } from "../utils";
-import { SsrRenderer } from "./SsrRenderer";
+import { createString } from "./createString";
 
-export const htmlElToString = (el: HtmlElement, renderer: SsrRenderer) => {
+export const htmlElToString = (el: HtmlElement) => {
   let s = `<${el.tag}`;
 
   const props: string[] = [];
@@ -33,7 +33,7 @@ export const htmlElToString = (el: HtmlElement, renderer: SsrRenderer) => {
   }
 
   if (el.children.length > 0) {
-    const childrenString = renderer.create(el.children);
+    const childrenString = createString(el.children);
     s += `>${childrenString}</${el.tag}>`;
   }
   //
