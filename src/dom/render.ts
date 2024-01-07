@@ -1,10 +1,14 @@
+import { HtmlElement, createElements } from "../elements";
 import { LwNode } from "../types";
-import { DomRenderer, DomRendererOptions } from "./DomRenderer";
+import { createDomNodes } from "./createDomNodes";
 
-export const render = (
-  node: LwNode,
-  container: HTMLElement,
-  options?: DomRendererOptions
-) => {
-  new DomRenderer(options).render(node, container);
+export const render = (node: LwNode, container: HTMLElement) => {
+  const els = createElements(node);
+
+  const containerEl = new HtmlElement(container.tagName.toLowerCase(), {}, els);
+  containerEl.nodes = [container];
+
+  const domNodes = createDomNodes(els, containerEl);
+
+  container.append(...domNodes);
 };

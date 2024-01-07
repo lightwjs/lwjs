@@ -1,13 +1,10 @@
 import { activeComponent } from "../activeComponent";
 import { ComponentElement, createElements } from "../elements";
-import { DomRenderer } from "./DomRenderer";
+import { createDomNodes } from "./createDomNodes";
 
-export const createComponentElementDom = (
-  el: ComponentElement<any>,
-  renderer: DomRenderer
-) => {
+export const createComponentElementDom = (el: ComponentElement<any>) => {
   activeComponent.set(el);
   el.children = createElements(el.render(el.props));
   activeComponent.set(undefined);
-  return renderer.create(el.children, el);
+  return createDomNodes(el.children, el);
 };

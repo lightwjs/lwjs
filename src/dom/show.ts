@@ -1,14 +1,11 @@
 import { ShowElement } from "../elements";
 import { Effect } from "../reactive";
-import { DomRenderer } from "./DomRenderer";
+import { createDomNodes } from "./createDomNodes";
 import { findNextNode } from "./findNextNode";
 import { getDomParent } from "./getDomParent";
 import { removeElement } from "./removeElement";
 
-export const createShowElementDom = (
-  el: ShowElement,
-  renderer: DomRenderer
-) => {
+export const createShowElementDom = (el: ShowElement) => {
   let prevCond: boolean | undefined;
 
   const eff = new Effect([el.reactive], () => {
@@ -23,7 +20,7 @@ export const createShowElementDom = (
       }
 
       if (el.children.length > 0) {
-        const nodes = renderer.create(el.children, el);
+        const nodes = createDomNodes(el.children, el);
         const nextNode = findNextNode(el);
         const domParent = getDomParent(el);
 
@@ -38,5 +35,5 @@ export const createShowElementDom = (
   });
 
   el.effects = [eff];
-  return renderer.create(el.children, el);
+  return createDomNodes(el.children, el);
 };

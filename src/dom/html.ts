@@ -5,18 +5,15 @@ import {
   isEventProp,
   isReactiveValue,
 } from "../utils";
-import { DomRenderer } from "./DomRenderer";
+import { createDomNodes } from "./createDomNodes";
 
-export const createHtmlElementDom = (
-  el: HtmlElement,
-  renderer: DomRenderer
-) => {
+export const createHtmlElementDom = (el: HtmlElement) => {
   const dom = el.isSvg
     ? document.createElementNS("http://www.w3.org/2000/svg", el.tag)
     : document.createElement(el.tag);
   el.nodes = [dom];
 
-  dom.append(...renderer.create(el.children, el));
+  dom.append(...createDomNodes(el.children, el));
 
   const keys = Object.keys(el.props);
 
@@ -30,14 +27,14 @@ export const createHtmlElementDom = (
     else {
       if (isReactiveValue(value)) {
         const eff = new Effect([value], () => {
-          setAttributeOrProp(el, dom, key, value.value, renderer);
+          setAttributeOrProp(el, dom, key, value.value);
         });
         if (!el.effects) el.effects = [];
         el.effects.push(eff);
       }
       //
       else {
-        setAttributeOrProp(el, dom, key, value, renderer);
+        setAttributeOrProp(el, dom, key, value);
       }
     }
   }
@@ -49,15 +46,14 @@ export const setAttributeOrProp = (
   el: HtmlElement,
   node: HTMLElement | SVGElement,
   key: string,
-  value: any,
-  renderer: DomRenderer
+  value: any
 ) => {
   if (key === "style") {
     setStyleAttribute(node, value);
   }
   //
   else if (key === "css") {
-    setCssClass(el, node, value, renderer);
+    // setCssClass(el, node, value, renderer);
   }
   //
   else if (PROP_MAP[key]) {
@@ -83,20 +79,18 @@ export const setStyleAttribute = (
   }
 };
 
-export const setCssClass = (
-  el: HtmlElement,
-  node: HTMLElement | SVGElement,
-  value: any,
-  renderer: DomRenderer
-) => {
-  const className = renderer.cssRenderer.getCssClass(value);
-
-  if (el.cls && el.cls !== className) {
-    node.classList.remove(el.cls);
-  }
-  el.cls = className;
-  node.classList.add(className);
-};
+export const setCssClass = () =>
+  // el: HtmlElement,
+  // node: HTMLElement | SVGElement,
+  // value: any
+  {
+    // const className = renderer.cssRenderer.getCssClass(value);
+    // if (el.cls && el.cls !== className) {
+    //   node.classList.remove(el.cls);
+    // }
+    // el.cls = className;
+    // node.classList.add(className);
+  };
 
 // html props treated as element properties ( not attributes )
 const PROP_MAP: any = {

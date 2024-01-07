@@ -1,50 +1,52 @@
-import { createContext, getContext, show } from "../elements";
-import { State } from "../reactive";
+import { component, createContext, show } from "../elements";
+import { Computed } from "../reactive";
 import { LwNode } from "../types";
-import { Outlet } from "./Outlet";
-import { RouteConfig } from "./types";
+import { Path } from "./Path";
+import { getRouterContext } from "./Router";
 
-export class Route {
-  constructor(key: string, route: RouteConfig) {
-    this.key = key;
-    this.isParam = this.key.indexOf(":") === 0;
-    this.renderFn = route.render ?? defaultRenderFn;
-    this.isMatch = new State(key === "root");
-    this.params = new State<Record<string, string> | undefined>(
-      key === "root" ? {} : undefined
-    );
-    if (route.routes) {
-      const keys = Object.keys(route.routes);
-      this.routes = keys.map((key) => new Route(key, route.routes![key]));
-    }
+export class Route<Params = void> {
+  constructor(options: RouteOptions<Params>) {
+    this.path = options.path(new Path<Params>());
   }
-  key;
-  renderFn;
-  isMatch;
-  params;
-  isParam;
-  routes: Route[] = [];
+  path;
+  node: LwNode;
 
-  render(): LwNode {
+  toRender(node: LwNode) {
+    this.node = node;
+  }
+
+  render() {
     return RouteContext.provider(
-      {
-        value: {
-          route: this,
-          params: this.params,
-        },
-      },
-      show(this.isMatch, this.renderFn())
+      { value: this },
+      RouteComponent({ route: this })
     );
+  }
+
+  getParams() {
+    const router = getRouterContext();
+
+    const match = router.matches.get(this);
+
+    if (!match) {
+      throw new Error("Route wasn't passed in the Router constructor");
+    }
+
+    return new Computed<Params>([match], () => match.value?.params ?? {});
+  }
+
+  toHref(params: Params) {
+    return this.path.toHref(params);
   }
 }
 
-const defaultRenderFn = () => Outlet();
+const RouteContext = createContext<Route<any>>();
 
-export const RouteContext = createContext<RouteContextValue>();
+const RouteComponent = component<{ route: Route }>(({ route }) => {
+  const router = getRouterContext();
 
-export const getParams = () => getContext(RouteContext).params;
+  return show(router.matches.get(route)!, route.node);
+});
 
-type RouteContextValue = {
-  route: Route;
-  params: State<Record<string, string> | undefined>;
+type RouteOptions<Params> = {
+  path: (p: Path<Params>) => Path<Params>;
 };

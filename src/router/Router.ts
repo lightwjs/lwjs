@@ -1,72 +1,69 @@
-import { createContext } from "../elements";
+import { createContext, getContext } from "../elements";
 import { Effect, State } from "../reactive";
+import { LwNode } from "../types";
 import { Route } from "./Route";
-import { getPathParts } from "./getPathParts";
-import { matchRoutes } from "./matchRoutes";
-import { RouteMatch, RouterConfig, RouterNavigateOptions, To } from "./types";
+import { matchRoute } from "./matchRoute";
+import { RouteMatch, RouterHistory, RouterLocation } from "./types";
 
 export class Router {
-  constructor(config: RouterConfig) {
-    this.root = new Route("root", config.root);
-    this.history = config.history;
+  constructor(options: RouterOptions) {
+    this.history = options.history;
     this.location = new State(this.history.location);
+    this.history.listen((location) => {
+      this.location.value = location;
+    });
+    for (const route of options.routes) {
+      this.matches.set(route, new State(undefined));
+    }
 
     new Effect([this.location], () => {
-      const parts = getPathParts(this.location.value.url.pathname);
-
-      // index
-      if (parts.length === 0) {
-        this.matchedRoutes.forEach((rm) => {
-          rm.route.isMatch.value = false;
-          rm.route.params.value = emptyObject;
-        });
-        this.matchedRoutes = [];
-      }
-      //
-      else {
-        const prevMatched = this.matchedRoutes;
-        this.matchedRoutes = matchRoutes(parts, this.root.routes);
-
-        // set to false for routes no longer matched
-        prevMatched.forEach((rm) => {
-          const isMatched = this.matchedRoutes.find(
-            (r) => r.route === rm.route
-          );
-
-          if (!isMatched) {
-            rm.route.isMatch.value = false;
-            rm.route.params.value = emptyObject;
-          }
-        });
-
-        // set to true for newly matched routes
-        this.matchedRoutes.forEach((rm) => {
-          if (rm.route.isParam) {
-            rm.route.params.value = {
-              [`${rm.route.key.slice(1)}`]: rm.param,
-            } as any;
-          }
-          rm.route.isMatch.value = true;
-        });
-      }
+      options.routes.forEach((r) => {
+        const match = matchRoute(this.location.value.url, r);
+        this.matches.get(r)!.value = match;
+      });
     });
   }
-  root;
-  location;
   history;
-  matchedRoutes: RouteMatch[] = [];
+  location;
+  matches = new Map<Route<any>, State<RouteMatch<any> | undefined>>();
 
-  navigate(to: To, options?: RouterNavigateOptions) {
+  provider(...nodes: LwNode[]) {
+    return RouterContext.provider(
+      {
+        value: this,
+      },
+      nodes
+    );
+  }
+
+  navigate(path: string, options?: NavigateOptions) {
+    const newUrl = new URL(this.location.value.url);
+    newUrl.pathname = path;
+
+    const newLocation: RouterLocation = {
+      url: newUrl,
+    };
+
     if (options?.replace) {
-      this.history.replace(this.location.value, options.state);
+      this.history.replace(newLocation);
     }
     //
     else {
-      this.history.push(this.location.value, options?.state);
+      this.history.push(newLocation);
     }
+    this.location.value = newLocation;
   }
 }
 
-export const RouterContext = createContext<Router>();
+type RouterOptions = {
+  routes: Route<any>[];
+  history: RouterHistory;
+};
 
-const emptyObject = {};
+type NavigateOptions = {
+  replace?: boolean;
+};
+
+const RouterContext = createContext<Router>();
+
+export const getRouterContext = () => getContext(RouterContext);
