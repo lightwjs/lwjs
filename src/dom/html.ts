@@ -1,3 +1,4 @@
+import { css } from "../css";
 import { HtmlElement } from "../elements";
 import { Effect } from "../reactive";
 import {
@@ -53,7 +54,7 @@ export const setAttributeOrProp = (
   }
   //
   else if (key === "css") {
-    // setCssClass(el, node, value, renderer);
+    setCssClass(el, node, value);
   }
   //
   else if (PROP_MAP[key]) {
@@ -65,7 +66,7 @@ export const setAttributeOrProp = (
   }
 };
 
-export const setStyleAttribute = (
+const setStyleAttribute = (
   node: HTMLElement | SVGElement,
   styleObj: Record<string, any>
 ) => {
@@ -79,18 +80,18 @@ export const setStyleAttribute = (
   }
 };
 
-export const setCssClass = () =>
-  // el: HtmlElement,
-  // node: HTMLElement | SVGElement,
-  // value: any
-  {
-    // const className = renderer.cssRenderer.getCssClass(value);
-    // if (el.cls && el.cls !== className) {
-    //   node.classList.remove(el.cls);
-    // }
-    // el.cls = className;
-    // node.classList.add(className);
-  };
+const setCssClass = (
+  el: HtmlElement,
+  node: HTMLElement | SVGElement,
+  value: any
+) => {
+  const className = css.get().getCssClass(value);
+  if (el.cls && el.cls !== className) {
+    node.classList.remove(el.cls);
+  }
+  el.cls = className;
+  node.classList.add(className);
+};
 
 // html props treated as element properties ( not attributes )
 const PROP_MAP: any = {

@@ -4,14 +4,12 @@
 
 import { describe, expect, test, vi } from "vitest";
 import { h } from "../../elements";
-import { DomRenderer } from "../DomRenderer";
 import { createHtmlElementDom, setStyleAttribute } from "../html";
 
 describe("dom html", () => {
   test("empty element", () => {
     const el = h("div", {});
-    const renderer = new DomRenderer();
-    const [node] = createHtmlElementDom(el, renderer);
+    const [node] = createHtmlElementDom(el);
 
     expect(node).toBeInstanceOf(HTMLElement);
     expect(node.tagName).equal("DIV");
@@ -19,8 +17,7 @@ describe("dom html", () => {
 
   test("with child", () => {
     const el = h("div", {}, h("h1", {}));
-    const renderer = new DomRenderer();
-    const [node] = createHtmlElementDom(el, renderer);
+    const [node] = createHtmlElementDom(el);
 
     expect(node).toBeInstanceOf(HTMLElement);
     expect(node.tagName).equal("DIV");
@@ -39,8 +36,7 @@ describe("dom html", () => {
       id,
       className,
     });
-    const renderer = new DomRenderer();
-    const [node] = createHtmlElementDom(el, renderer);
+    const [node] = createHtmlElementDom(el);
 
     expect(node).toBeInstanceOf(HTMLElement);
     expect(node.tagName).equal("DIV");
@@ -53,8 +49,7 @@ describe("dom html", () => {
     const el = h("div", {
       onClick,
     });
-    const renderer = new DomRenderer();
-    const [node] = createHtmlElementDom(el, renderer);
+    const [node] = createHtmlElementDom(el);
 
     expect(onClick).toBeCalledTimes(0);
 

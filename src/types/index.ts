@@ -3,7 +3,6 @@ export * from "./css";
 export * from "./elements";
 export * from "./events";
 export * from "./html";
-export * from "./internal";
 export * from "./nodes";
 export * from "./shared";
 export * from "./svg";
